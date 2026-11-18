@@ -116,7 +116,6 @@
 
         <!-- ================= 主應用程式畫面 ================= -->
         <div id="mainAppView" class="flex-1 flex flex-col hidden">
-            <!-- 標題列：改為溫馨可愛的粉嫩紫藍漸層 -->
             <header class="bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 text-white px-5 pt-6 pb-5 sticky top-0 z-20 shadow-lg rounded-b-3xl">
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-3">
@@ -132,13 +131,11 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <!-- 匯入 Excel 按鈕 -->
                         <button onclick="document.getElementById('excelFileInput').click()" title="從 Excel 批次匯入" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-3 py-2.5 rounded-2xl text-xs font-medium flex items-center gap-1.5 shadow-sm transition active:scale-95 border border-white/20 cursor-pointer">
                             <i class="fa-solid fa-file-excel text-emerald-300"></i> 匯入
                         </button>
                         <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" onchange="handleExcelImport(event)" class="hidden">
 
-                        <!-- 🔥 放大過的新增客戶按鈕 -->
                         <button onclick="openAddModal()" class="bg-pink-500 hover:bg-pink-400 text-white px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-pink-500/40 transition active:scale-95 border border-pink-300 cursor-pointer">
                             <i class="fa-solid fa-plus text-sm"></i> 新增客戶
                         </button>
@@ -170,7 +167,6 @@
                 </div>
             </main>
 
-            <!-- 底部可愛統計列 -->
             <footer class="bg-white/90 backdrop-blur-md border-t border-pink-100 px-5 py-3.5 fixed bottom-0 w-full max-w-[540px] z-10 text-xs text-slate-600 shadow-xl space-y-2 rounded-t-3xl">
                 <div class="flex justify-between items-center font-medium">
                     <div>總客戶：<span id="totalCount" class="font-bold text-violet-600 text-sm">0</span> 位</div>
@@ -202,7 +198,6 @@
                 <form id="clientForm" onsubmit="saveClient(event)">
                     <input type="hidden" id="clientId">
 
-                    <!-- 報價單智慧辨識專區 -->
                     <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-4 rounded-2xl border border-pink-200 space-y-3 shadow-inner">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析</h4>
@@ -224,7 +219,6 @@
                         <button type="button" onclick="removePhoto()" class="text-rose-600 font-bold hover:underline cursor-pointer">清除</button>
                     </div>
 
-                    <!-- 基本與車輛資料 -->
                     <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-user mr-1 text-pink-400"></i> 客戶與車輛基本資料</h4>
                         <div class="grid grid-cols-2 gap-3">
@@ -279,7 +273,6 @@
                         </div>
                     </div>
 
-                    <!-- 承保產險公司與期間 -->
                     <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-building-shield mr-1 text-pink-400"></i> 承保資訊與到期提醒</h4>
@@ -320,7 +313,6 @@
                         </div>
                     </div>
 
-                    <!-- 承保內容與保費明細 -->
                     <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-file-invoice-dollar mr-1 text-pink-400"></i> 承保內容與保費明細</h4>
                         <div class="grid grid-cols-3 gap-2">
@@ -371,7 +363,6 @@
                         </div>
                     </div>
 
-                    <!-- 附加圖片櫃 -->
                     <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-images mr-1 text-pink-400"></i> 相關檔案 / 圖片櫃 (保單、行照)</h4>
@@ -400,14 +391,12 @@
     <!-- ================= 互動視窗：客戶詳細內容與保單檢視 ================= -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs transition-opacity">
         <div class="bg-white w-full max-w-[540px] max-h-[92vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-pink-100">
-            <!-- 視窗標題列：右上角已包含修正好的編輯按鈕 -->
             <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-5 py-4 flex justify-between items-center">
                 <div>
                     <h3 id="detailModalName" class="font-bold text-lg">客戶詳細資料</h3>
                     <p id="detailModalPlate" class="text-xs text-pink-100 font-mono tracking-wider"></p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <!-- 🔥 修正後的右上角編輯按鈕 -->
                     <button onclick="editCurrentClientFromHeader()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer border border-white/20">
                         <i class="fa-solid fa-pen-to-square"></i> 編輯
                     </button>
@@ -897,6 +886,35 @@
             reader.readAsArrayBuffer(file);
         }
 
+        // 🔥 複製純文字 LINE 提醒通知給客戶
+        function sendLineNotification(name, plate, endDate) {
+            const message = `【車險到期貼心提醒】\n親愛的 ${name} 您好：\n您的愛車 (${plate}) 強任意險保單將於 ${endDate} 到期。\n為確保行車保障不中斷，歡迎隨時與我聯繫辦理續保！\n業務專員 敬上`;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(message).then(() => {
+                    alert('📋 LINE 提醒通知文字已成功複製！\n\n您可以直接前往 LINE 貼上發送給客戶。');
+                }).catch(() => {
+                    fallbackCopyText(message);
+                });
+            } else {
+                fallbackCopyText(message);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('📋 LINE 提醒通知文字已成功複製！');
+            } catch (err) {
+                alert('複製失敗，請手動複製文字。');
+            }
+            document.body.removeChild(textarea);
+        }
+
         function renderClientList(dataList) {
             const container = document.getElementById('clientListContainer');
             if (dataList.length === 0) {
@@ -908,7 +926,6 @@
                 const diffDays = Math.ceil((new Date(client.endDate) - today) / (1000 * 60 * 60 * 24));
                 let badgeHtml = diffDays < 0 ? `<span class="bg-rose-100 text-rose-600 text-xs px-3 py-1 rounded-full font-bold shadow-xs">已過期 ${Math.abs(diffDays)} 天</span>` : diffDays <= 30 ? `<span class="bg-amber-100 text-amber-700 text-xs px-3 py-1 rounded-full font-bold shadow-xs">剩餘 ${diffDays} 天</span>` : `<span class="bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-full font-medium shadow-xs">剩餘 ${diffDays} 天</span>`;
                 const totalFee = (client.compulsoryFee || 0) + (client.optionalFee || 0);
-                const pushMsg = encodeURIComponent(`【車險到期貼心提醒】\n親愛的 ${client.name} 您好：\n您的愛車 (${client.plateNumber}) 強任意險保單將於 ${client.endDate} 到期。\n為確保行車保障不中斷，歡迎隨時與我聯繫辦理續保！\n業務專員 敬上`);
 
                 return `
                     <div class="bg-white rounded-3xl p-4.5 mb-3 border border-pink-100 shadow-md hover:shadow-lg transition">
@@ -923,10 +940,11 @@
                         <div class="flex justify-between items-center pt-2.5 border-t border-pink-50 text-xs">
                             <span class="text-slate-600 cursor-pointer" onclick="openDetailModal('${client.id}')">總保費：<strong class="text-indigo-600">NT$ ${totalFee.toLocaleString()}</strong></span>
                             
+                            <!-- 🔥 點擊一鍵複製純文字 LINE 提醒 -->
                             <div class="flex items-center gap-1.5">
-                                <a href="https://line.me/R/msg/text/?${pushMsg}" target="_blank" title="一鍵傳送 LINE 到期提醒" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-2xl font-bold flex items-center gap-1.5 transition shadow-xs">
+                                <button onclick="sendLineNotification('${client.name}', '${client.plateNumber}', '${client.endDate}')" title="一鍵複製 LINE 到期提醒文字" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-2xl font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer">
                                     <i class="fa-brands fa-line text-emerald-500 text-sm"></i> LINE 提醒
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -981,7 +999,6 @@
 
         function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
-        // 🔥 修正後的頂端標題列「編輯」按鈕觸發函數
         function editCurrentClientFromHeader() {
             if (!currentActiveClientId) return;
             closeDetailModal();
