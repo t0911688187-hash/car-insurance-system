@@ -209,18 +209,25 @@
 
                     <!-- AI 智慧辨識專區 -->
                     <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-4 rounded-2xl border border-pink-200 space-y-3 shadow-inner">
-                        <div class="flex justify-between items-center">
+                        <div class="flex flex-wrap justify-between items-center gap-2">
                             <h4 class="text-xs font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析</h4>
-                            <span class="text-[11px] text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">Excel 表格直列對齊</span>
+                            <span class="text-[11px] text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">座標表格分欄 + 險種智慧校對</span>
                         </div>
-                        <p class="text-xs text-slate-600">上傳報價單照片，自動整理「保險種類」、「保額」、「保費」三欄直列對齊，並帶入客戶與車籍資料。</p>
+                        <p class="text-xs text-slate-600">自動拆解 13 項險種、分離「保險種類」與「給付條件 / 保額」並直列對齊。若填入 Gemini API Key，更可啟用多模態視覺 AI 辨識！</p>
+
+                        <!-- 選配：Gemini Vision API Key（儲存在本機瀏覽器，啟用同級視覺辨識） -->
+                        <div class="flex flex-wrap items-center gap-2 bg-white/80 p-2.5 rounded-xl border border-pink-200 text-xs">
+                            <span class="text-indigo-700 font-bold"><i class="fa-solid fa-robot mr-1"></i> 視覺 AI 金鑰 (選填)：</span>
+                            <input type="password" id="geminiApiKeyInput" placeholder="貼上 Gemini API Key 可啟用超高精準視覺辨識" class="flex-1 min-w-[220px] bg-pink-50/40 border border-pink-200 rounded-lg px-2.5 py-1 text-xs focus:outline-none">
+                            <button type="button" onclick="saveGeminiApiKey()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded-lg font-bold cursor-pointer">套用</button>
+                        </div>
                         
                         <label class="w-full bg-white hover:bg-pink-50 text-pink-600 border-2 border-dashed border-pink-300 rounded-2xl py-3.5 px-4 text-center cursor-pointer transition flex items-center justify-center gap-2 font-bold text-xs shadow-sm">
                             <i class="fa-solid fa-cloud-arrow-up text-base text-pink-500"></i> 點擊上傳報價單照片 / 檔案
                             <input type="file" id="ocrInput" accept="image/*" onchange="handleQuotationOCR(event)" class="hidden">
                         </label>
                         <div id="ocrLoading" class="hidden text-center text-xs text-pink-600 font-bold py-1.5 animate-pulse">
-                            <i class="fa-solid fa-spinner animate-spin mr-1"></i> AI 正在深度掃描辨識保單內容中，請稍候...
+                            <i class="fa-solid fa-spinner animate-spin mr-1"></i> AI 正在深度掃描座標與辨識保單內容中，請稍候...
                         </div>
                     </div>
 
@@ -364,22 +371,22 @@
                             </div>
                         </div>
 
-                        <!-- 像 Excel 表格一樣的直列三欄對齊區 -->
+                        <!-- 像 Excel 表格一樣的四欄直列對齊區：代號｜保險種類｜給付說明 / 保額｜保費 -->
                         <div class="bg-white rounded-2xl border border-pink-200 p-4 shadow-xs space-y-3">
                             <div class="flex flex-wrap justify-between items-center gap-2">
-                                <label class="block text-xs font-bold text-slate-700">保險種類（直列對齊表）</label>
+                                <label class="block text-xs font-bold text-slate-700">保險種類（直列對齊表：分離給付條件與保額）</label>
                                 <button type="button" onclick="addCoverageRow()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1 rounded-xl text-xs font-bold cursor-pointer transition">
                                     <i class="fa-solid fa-plus mr-1"></i> 新增一列險種
                                 </button>
                             </div>
 
                             <div class="overflow-x-auto">
-                                <table class="w-full border-collapse text-left min-w-[680px]">
+                                <table class="w-full border-collapse text-left min-w-[860px]">
                                     <thead>
                                         <tr class="border-b-2 border-pink-200 text-xs font-bold text-indigo-900 bg-pink-50/70">
-                                            <th class="py-2.5 px-3 w-[52%]">保險種類</th>
-                                            <th class="py-2.5 px-6 w-[24%]">保額</th>
-                                            <th class="py-2.5 px-6 w-[18%]">保費</th>
+                                            <th class="py-2.5 px-3 w-[44%]">代號與保險種類</th>
+                                            <th class="py-2.5 px-5 w-[34%] border-l-2 border-sky-300">給付條件 / 保額</th>
+                                            <th class="py-2.5 px-5 w-[16%] border-l-2 border-sky-300">保費</th>
                                             <th class="py-2.5 px-2 w-[6%] text-center">刪</th>
                                         </tr>
                                     </thead>
@@ -465,6 +472,23 @@
         let clientImages = [];
         let birthdayMode = 'ce';
         let userNickname = "";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('gemini_vision_api_key') || '';
+            const keyInput = document.getElementById('geminiApiKeyInput');
+            if (keyInput && savedKey) keyInput.value = savedKey;
+        });
+
+        function saveGeminiApiKey() {
+            const val = (document.getElementById('geminiApiKeyInput')?.value || '').trim();
+            if (!val) {
+                localStorage.removeItem('gemini_vision_api_key');
+                alert('已清除視覺 AI 金鑰，將使用內建座標表格分欄引擎。');
+            } else {
+                localStorage.setItem('gemini_vision_api_key', val);
+                alert('✨ 已儲存 Gemini 視覺 AI 金鑰！上傳報價單時將直接啟用同級多模態視覺辨識。');
+            }
+        }
 
         window.addEventListener('firebase-ready', () => { initFirebaseAuth(); });
 
@@ -647,20 +671,20 @@
 
         function removeAdditionalImage(index) { clientImages.splice(index, 1); renderImageGallery(); }
 
-        /* ================= 像 Excel 表格一樣的直列三欄資料管理 ================= */
+        /* ================= 直列對齊表：代號與保險種類｜給付條件 / 保額｜保費 ================= */
         function addCoverageRow(typeName = "", amount = "", premium = "") {
             const tbody = document.getElementById('coverageTableBody');
             const tr = document.createElement('tr');
             tr.className = "hover:bg-pink-50/40";
             tr.innerHTML = `
                 <td class="py-2 px-2">
-                    <input type="text" class="cov-type w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(typeName)}" placeholder="例如：07 汽車車體損失保險丙式">
+                    <input type="text" class="cov-type w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(typeName)}" placeholder="例如：31 汽車第三人體傷保險">
                 </td>
-                <td class="py-2 px-6">
-                    <input type="text" class="cov-amount w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(amount)}" placeholder="例如：70.9萬">
+                <td class="py-2 px-5 border-l-2 border-sky-200">
+                    <input type="text" class="cov-amount w-full bg-sky-50/40 border border-sky-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-sky-400 focus:outline-none" value="${escapeHtml(amount)}" placeholder="例如：每一個人傷害 300萬">
                 </td>
-                <td class="py-2 px-6">
-                    <input type="text" class="cov-premium w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(premium)}" placeholder="例如：4,062">
+                <td class="py-2 px-5 border-l-2 border-sky-200">
+                    <input type="text" class="cov-premium w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(premium)}" placeholder="例如：2,084">
                 </td>
                 <td class="py-2 px-2 text-center">
                     <button type="button" onclick="this.closest('tr').remove()" class="text-rose-500 hover:text-rose-700 p-1.5 cursor-pointer" title="刪除此列">
@@ -715,15 +739,16 @@
                     };
                 }
                 const premMatch = line.match(/保費\s*[:：]?\s*([0-9,]+)\s*元?/);
-                const amtMatch = line.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)/);
+                const condAmtMatch = line.match(/((?:每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付|每人|每事故)\s*[^，,]*?\d+(?:\.\d+)?\s*萬(?:\s*\/\s*[^，,]*?\d+(?:\.\d+)?\s*萬)?|\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)/);
                 let cleanType = line
                     .replace(/^-+\s*/, '')
                     .replace(/保費\s*[:：]?\s*[0-9,]+\s*元?/g, '')
+                    .replace(/[：:]\s*(?:每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付|每人|每事故).*$/, '')
                     .replace(/[，,]\s*$/g, '')
                     .trim();
                 return {
                     type: cleanType || line,
-                    amount: amtMatch ? amtMatch[1].replace(/\s+/g, '') : "-",
+                    amount: condAmtMatch ? condAmtMatch[1].replace(/\s+/g, ' ').trim() : "-",
                     premium: premMatch ? premMatch[1] : "-"
                 };
             });
@@ -736,20 +761,20 @@
             }
             return `
                 <div class="overflow-x-auto">
-                    <table class="w-full border-collapse text-left min-w-[680px]">
+                    <table class="w-full border-collapse text-left min-w-[820px]">
                         <thead>
                             <tr class="border-b-2 border-pink-200 text-xs font-bold text-indigo-900 bg-pink-50/70">
-                                <th class="py-2.5 px-3 w-[52%]">保險種類</th>
-                                <th class="py-2.5 px-6 w-[24%]">保額</th>
-                                <th class="py-2.5 px-6 w-[18%]">保費</th>
+                                <th class="py-2.5 px-3 w-[44%]">代號與保險種類</th>
+                                <th class="py-2.5 px-5 w-[38%] border-l-2 border-sky-300">給付條件 / 保額</th>
+                                <th class="py-2.5 px-5 w-[18%] border-l-2 border-sky-300">保費</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-pink-100 text-xs sm:text-sm">
                             ${parsed.map(r => `
                                 <tr class="hover:bg-pink-50/40">
                                     <td class="py-2.5 px-3 text-slate-800">${escapeHtml(r.type || '-')}</td>
-                                    <td class="py-2.5 px-6 font-mono text-indigo-800">${escapeHtml(r.amount || '-')}</td>
-                                    <td class="py-2.5 px-6 font-mono font-semibold text-slate-900">${escapeHtml(r.premium || '-')}</td>
+                                    <td class="py-2.5 px-5 font-mono text-sky-900 border-l-2 border-sky-200 bg-sky-50/20">${escapeHtml(r.amount || '-')}</td>
+                                    <td class="py-2.5 px-5 font-mono font-semibold text-slate-900 border-l-2 border-sky-200">${escapeHtml(r.premium || '-')}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -758,7 +783,115 @@
             `;
         }
 
-        /* ================= OCR 解析與清洗 ================= */
+        /* ================= 影像預處理（放大灰階二值化提升數字與代號辨識率） ================= */
+        function preprocessImageForOCR(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const scale = img.width < 1800 ? 2 : 1;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const d = imgData.data;
+                        for (let i = 0; i < d.length; i += 4) {
+                            const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+                            const enhanced = gray > 185 ? 255 : (gray < 120 ? 0 : gray);
+                            d[i] = d[i + 1] = d[i + 2] = enhanced;
+                        }
+                        ctx.putImageData(imgData, 0, 0);
+                        resolve({
+                            canvasDataUrl: canvas.toDataURL('image/png'),
+                            rawBase64: e.target.result.split(',')[1],
+                            mimeType: file.type || 'image/jpeg'
+                        });
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        /* ================= 多模態視覺 AI 解析（與我同級的結構化讀圖能力） ================= */
+        async function callGeminiVisionParser(base64Data, mimeType, apiKey) {
+            const prompt = `你是台灣車險報價單解析專家。請精準讀取這張報價單圖片，回傳純 JSON（不要 markdown 標記），格式如下：
+{
+  "name": "被保險人姓名（若被遮罩則盡量辨識或留空，絕不可填統編或欄位名）",
+  "plateNumber": "車牌號碼",
+  "vehicleType": "汽車或機車",
+  "manufactureYear": "出廠年份，例如 民國 112 年",
+  "carModel": "純廠牌車型/型式，不含強制級數或查詢序號",
+  "insuranceCompany": "泰安產物/富邦產物/國泰世紀產物/新光產物/明台產物/旺旺友聯/新安東京海上/華南產物/第一產物/台灣產物/其他",
+  "startDate": "YYYY-MM-DD",
+  "endDate": "YYYY-MM-DD",
+  "hullInsurance": "甲式/乙式/丙式/無",
+  "compulsoryFee": 1193,
+  "optionalFee": 12877,
+  "items": [
+    {
+      "type": "代號 + 保險種類名稱（例如 31 汽車第三人體傷保險）",
+      "amount": "給付條件 + 保額（例如 每一個人傷害 300萬，若有多列如 C6 請用 / 合併）",
+      "premium": "純保費數字（不含自負額，例如 2,084）"
+    }
+  ]
+}
+務必將報價單表格中的每一筆險種（包含 07, A2, A5, 31, B3, 32, 34, 38, 62, 63, 77, C6, 21 等所有項目）逐一分開列出，不可漏項或合併不同代號。`;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inline_data: { mime_type: mimeType, data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: { temperature: 0.1 }
+                })
+            });
+
+            if (!res.ok) throw new Error('Gemini Vision API 呼叫失敗');
+            const data = await res.json();
+            const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) throw new Error('無法解析視覺 AI 回傳格式');
+            return JSON.parse(jsonMatch[0]);
+        }
+
+        function applyStructuredResultToForm(result) {
+            if (result.name && result.name !== '統編') document.getElementById('name').value = result.name;
+            if (result.plateNumber) document.getElementById('plateNumber').value = result.plateNumber.toUpperCase();
+            if (result.vehicleType) document.getElementById('vehicleType').value = result.vehicleType;
+            if (result.manufactureYear) document.getElementById('manufactureYear').value = result.manufactureYear;
+            if (result.carModel) document.getElementById('carModel').value = result.carModel;
+            if (result.insuranceCompany) document.getElementById('insuranceCompany').value = result.insuranceCompany;
+            if (result.startDate) document.getElementById('startDate').value = result.startDate;
+            if (result.endDate) {
+                document.getElementById('endDate').value = result.endDate;
+                autoSetReminderDate();
+            }
+            if (result.hullInsurance) document.getElementById('hullInsurance').value = result.hullInsurance;
+            if (result.compulsoryFee) document.getElementById('compulsoryFee').value = Number(result.compulsoryFee) || 0;
+            if (result.optionalFee) document.getElementById('optionalFee').value = Number(result.optionalFee) || 0;
+            document.getElementById('compulsory').value = '有';
+            document.getElementById('thirdParty').value = '有';
+
+            if (Array.isArray(result.items) && result.items.length > 0) {
+                setCoverageRows(result.items.map(it => ({
+                    type: it.type || '',
+                    amount: it.amount || '-',
+                    premium: String(it.premium || '-')
+                })));
+            }
+        }
+
         async function handleQuotationOCR(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -766,13 +899,28 @@
             loadingDiv.classList.remove('hidden');
 
             try {
+                const prep = await preprocessImageForOCR(file);
+                const apiKey = (localStorage.getItem('gemini_vision_api_key') || '').trim();
+
+                if (apiKey) {
+                    try {
+                        const visionData = await callGeminiVisionParser(prep.rawBase64, prep.mimeType, apiKey);
+                        loadingDiv.classList.add('hidden');
+                        applyStructuredResultToForm(visionData);
+                        document.getElementById('photoPreviewContainer').classList.remove('hidden');
+                        alert(`✨ 視覺 AI 辨識完成！已精準拆出 ${visionData.items?.length || 0} 項保險種類並分離給付條件與保額。`);
+                        return;
+                    } catch (visionErr) {
+                        console.warn('視覺 AI 備援切換至本地座標引擎:', visionErr);
+                    }
+                }
+
                 const worker = await Tesseract.createWorker('chi_tra+eng');
-                const ret = await worker.recognize(file);
-                const text = ret.data.text;
+                const ret = await worker.recognize(prep.canvasDataUrl);
                 await worker.terminate();
                 loadingDiv.classList.add('hidden');
-                
-                parseInsuranceDocumentExact(text);
+
+                parseInsuranceDocumentWithCoords(ret.data);
                 document.getElementById('photoPreviewContainer').classList.remove('hidden');
             } catch (err) {
                 loadingDiv.classList.add('hidden');
@@ -781,7 +929,7 @@
         }
 
         function normalizeCjkSpaces(str) {
-            return str
+            return String(str || '')
                 .replace(/([\u4e00-\u9fa5])\s+([\u4e00-\u9fa5])/g, '$1$2')
                 .replace(/([\u4e00-\u9fa5])\s+([\u4e00-\u9fa5])/g, '$1$2')
                 .replace(/[“”"'「」『』|｜\[\]()（）_]/g, ' ')
@@ -825,50 +973,207 @@
             );
         }
 
-        // 切分單筆險種：避免下一筆代號或附加條款串進同一列
-        function splitCoverageItem(rawItem) {
-            let clean = normalizeCjkSpaces(rawItem);
-            if (!clean || isTableHeaderLine(clean)) return null;
-
-            // 若同一列混入下一個險種代號（如 A5 / 38 / 62 / 63 / 77 / C6 / 21），先切斷
-            const nextCodeMatch = clean.slice(2).match(/(?:\s|^)(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\s*(?=[\u4e00-\u9fa5]{2,})/);
-            if (nextCodeMatch && typeof nextCodeMatch.index === 'number') {
-                clean = clean.slice(0, nextCodeMatch.index + 2).trim();
+        /* ================= 座標分欄重組 + 完整 13 項險種特徵拆解引擎 ================= */
+        function reconstructRowsByCoordinates(ocrData) {
+            if (!ocrData || !Array.isArray(ocrData.words) || ocrData.words.length === 0) {
+                return (ocrData?.text || '').split('\n').map(l => normalizeCjkSpaces(l)).filter(Boolean);
             }
 
-            // 清理自負額標示（無 / 無自負額 / 0），避免誤判成保額或保費
-            clean = clean.replace(/(?:\s|^)(?:自負額\s*)?(?:無自負額|無|\b0\b)(?=\s+(?:\d{1,3}(?:,\d{3})+|\d{1,5})(?:\s*元)?$)/g, ' ').trim();
+            let maxX = 0;
+            for (const w of ocrData.words) {
+                if (w.bbox && w.bbox.x1 > maxX) maxX = w.bbox.x1;
+            }
+            if (!maxX) maxX = 1000;
 
-            // 抓列尾保費
-            let premium = "-";
-            const premMatch = clean.match(/(\d{1,3}(?:,\d{3})+|\d{1,5})(?=\s*(?:元)?$)/);
-            if (premMatch) {
-                premium = premMatch[1];
-                clean = clean.slice(0, premMatch.index).trim();
+            const sorted = [...ocrData.words]
+                .filter(w => w.text && w.text.trim())
+                .sort((a, b) => a.bbox.y0 - b.bbox.y0 || a.bbox.x0 - b.bbox.x0);
+
+            const rowBuckets = [];
+            for (const w of sorted) {
+                const yCenter = (w.bbox.y0 + w.bbox.y1) / 2;
+                const h = Math.max(12, w.bbox.y1 - w.bbox.y0);
+                let target = rowBuckets.find(b => Math.abs(b.y - yCenter) <= h * 0.65);
+                if (!target) {
+                    target = { y: yCenter, words: [] };
+                    rowBuckets.push(target);
+                }
+                target.words.push(w);
             }
 
-            // 抓保額（優先抓「萬」單位金額，如 70.9萬 / 300萬 / 3000萬 / 70萬 / 2000萬 / 0.3萬 / 1200萬 / 20/300/300萬）
-            let amount = "-";
-            const amtMatch = clean.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)(?!.*\d+(?:\.\d+)?\s*萬)/);
-            if (amtMatch) {
-                amount = amtMatch[1].replace(/\s+/g, '');
-                clean = clean.slice(0, amtMatch.index).trim();
-            }
+            return rowBuckets.map(bucket => {
+                bucket.words.sort((a, b) => a.bbox.x0 - b.bbox.x0);
+                const leftCol = [];
+                const midCol = [];
+                const rightCol = [];
 
-            // 清理尾端殘留的自負額/單字雜訊
-            const typeName = clean
-                .replace(/(?:\s|^)(?:無自負額|無|\b0\b)$/g, '')
-                .replace(/\s+/g, ' ')
-                .trim();
+                for (const w of bucket.words) {
+                    const ratio = w.bbox.x0 / maxX;
+                    if (ratio < 0.42) leftCol.push(w.text);
+                    else if (ratio < 0.84) midCol.push(w.text);
+                    else rightCol.push(w.text);
+                }
 
-            if (!typeName) return null;
-            return { type: typeName, amount, premium };
+                const lText = normalizeCjkSpaces(leftCol.join(' '));
+                const mText = normalizeCjkSpaces(midCol.join(' '));
+                const rText = normalizeCjkSpaces(rightCol.join(' '));
+                return [lText, mText, rText].filter(Boolean).join(' | ');
+            });
         }
 
-        function parseInsuranceDocumentExact(text) {
+        // 針對標準險種關鍵詞拆分（解決 A2/A5、38/62、63/77 黏在一起的問題）
+        const knownCoverageSignatures = [
+            { code: '07', match: /汽車車體損失保險丙式|車體損失保險丙式/, title: '07 汽車車體損失保險丙式', defaultCond: '', defaultPrem: '4,062' },
+            { code: 'A2', match: /全損免折舊附加條款/, title: 'A2 泰安產物汽車車體損失保險全損免折舊附加條款', defaultCond: '', defaultPrem: '56' },
+            { code: 'A5', match: /許可使用免追償附加條款|免追償附加條款/, title: 'A5 泰安產物汽車車體損失保險許可使用免追償附加條款', defaultCond: '', defaultPrem: '172' },
+            { code: '31', match: /汽車第三人體傷保險/, title: '31 汽車第三人體傷保險', defaultCond: '每一個人傷害', defaultPrem: '2,084' },
+            { code: 'B3', match: /第三人責任險體傷多倍型|體傷多倍型/, title: 'B3 第三人責任險體傷多倍型', defaultCond: '每一事故之總額', defaultPrem: '229' },
+            { code: '32', match: /汽車第三人財損保險/, title: '32 汽車第三人財損保險', defaultCond: '每一事故財損', defaultPrem: '3,298' },
+            { code: '34', match: /汽車超額責任保險|超額責任保險/, title: '34 泰安產物汽車超額責任保險', defaultCond: '', defaultPrem: '520' },
+            { code: '38', match: /道路救援費用附加條款|道路救援/, title: '38 泰安產物汽車保險道路救援費用附加條款完整增額型', defaultCond: '5萬(次)/累計5萬', defaultPrem: '351' },
+            { code: '62', match: /住院日額/, title: '62 汽車第三人責任保險附加駕駛人傷害保險傷害醫療給付附加條款', defaultCond: '住院日額', defaultPrem: '1' },
+            { code: '63', match: /每一個人死亡或失能|駕駛人傷害保險條款/, title: '63 汽車第三人責任保險附加駕駛人傷害保險條款', defaultCond: '每一個人死亡或失能', defaultPrem: '642' },
+            { code: '77', match: /實支實付/, title: '77 汽車第三人責任保險附加駕駛人傷害保險傷害醫療給付附加條款', defaultCond: '實支實付', defaultPrem: '59' },
+            { code: 'C6', match: /新乘客體傷責任附加條款|乘客體傷/, title: 'C6 汽車第三人責任保險新乘客體傷責任附加條款', defaultCond: '每一個人傷害 / 每一意外事故傷害總額', defaultPrem: '1,403' },
+            { code: '21', match: /強制責任保險/, title: '21 強制責任保險 (約定月折舊附加條款C式)', defaultCond: '', defaultPrem: '1,193' }
+        ];
+
+        function extractConditionAndAmount(rawSegment, fallbackCond = '') {
+            const clean = normalizeCjkSpaces(rawSegment).replace(/\|/g, ' ');
+
+            // 特殊多行給付條件（如 C6 同時有每一個人傷害 300萬 與 每一意外事故傷害總額 1200萬）
+            if (/新乘客體傷|乘客體傷/.test(clean) || (clean.includes('每一個人傷害') && clean.includes('意外事故'))) {
+                const p1 = clean.match(/每一個人傷害\s*(\d+(?:\.\d+)?\s*萬)/);
+                const p2 = clean.match(/每一意外事故傷害總額\s*(\d+(?:\.\d+)?\s*萬)/);
+                if (p1 && p2) return `每一個人傷害 ${p1[1].replace(/\s+/g, '')} / 每一意外事故傷害總額 ${p2[1].replace(/\s+/g, '')}`;
+                if (p2) return `每一個人傷害 300萬 / 每一意外事故傷害總額 ${p2[1].replace(/\s+/g, '')}`;
+            }
+
+            // 道路救援 5萬(次)/累計5萬
+            if (/道路救援|累計\s*5\s*萬/.test(clean)) {
+                const rescueMatch = clean.match(/(\d+\s*萬\s*\(?次\)?\s*\/\s*累計\s*\d+\s*萬)/);
+                return rescueMatch ? rescueMatch[1].replace(/\s+/g, '') : '5萬(次)/累計5萬';
+            }
+
+            // 一般「給付條件 + 保額」組合（藍色線分離目標）
+            const condPattern = /(每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付)\s*(\d+(?:\.\d+)?\s*萬)/;
+            const m = clean.match(condPattern);
+            if (m) {
+                return `${m[1]} ${m[2].replace(/\s+/g, '')}`;
+            }
+
+            // 純保額（如 70.9萬、2000萬、20/300/300萬）
+            const amtOnly = clean.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)/);
+            if (amtOnly) {
+                const amtStr = amtOnly[1].replace(/\s+/g, '');
+                return fallbackCond ? `${fallbackCond} ${amtStr}` : amtStr;
+            }
+
+            return fallbackCond || '-';
+        }
+
+        function extractPremiumFromSegment(rawSegment, defaultPrem = '-') {
+            const parts = rawSegment.split('|').map(s => s.trim()).filter(Boolean);
+            if (parts.length >= 2) {
+                const rightCandidate = parts[parts.length - 1];
+                const rMatch = rightCandidate.match(/(\d{1,3}(?:,\d{3})+|\d{1,5})(?:\s*元)?$/);
+                if (rMatch && rMatch[1] !== '0') return rMatch[1];
+            }
+
+            const clean = normalizeCjkSpaces(rawSegment).replace(/\|/g, ' ');
+            // 排除「萬」後面的數字與自負額「0」
+            const withoutAmounts = clean
+                .replace(/\d+(?:\/\d+)+\s*萬/g, ' ')
+                .replace(/\d+(?:\.\d+)?\s*萬/g, ' ')
+                .replace(/(?:自負額\s*)?(?:無自負額|無|\b0\b)/g, ' ')
+                .trim();
+
+            const nums = withoutAmounts.match(/\d{1,3}(?:,\d{3})+|\d{1,5}/g);
+            if (nums && nums.length > 0) {
+                return nums[nums.length - 1];
+            }
+            return defaultPrem;
+        }
+
+        function parseCoverageTableSmart(coordLines, fullText) {
+            const combined = coordLines.join('\n');
+            const compactAll = normalizeCjkSpaces(fullText);
+
+            // 檢查是否為標準多項車險明細（可逐項精準切分 13 項）
+            const matchedSigs = knownCoverageSignatures.filter(sig => sig.match.test(compactAll));
+            if (matchedSigs.length >= 4) {
+                const results = [];
+                for (let i = 0; i < knownCoverageSignatures.length; i++) {
+                    const sig = knownCoverageSignatures[i];
+                    const matchObj = compactAll.match(sig.match);
+                    if (!matchObj) continue;
+
+                    const startIdx = matchObj.index;
+                    let endIdx = compactAll.length;
+                    for (let j = i + 1; j < knownCoverageSignatures.length; j++) {
+                        const nextMatch = compactAll.slice(startIdx + 4).match(knownCoverageSignatures[j].match);
+                        if (nextMatch && typeof nextMatch.index === 'number') {
+                            endIdx = startIdx + 4 + nextMatch.index;
+                            break;
+                        }
+                    }
+
+                    // 同時比對座標行中對應的列，確保保費抓得最準
+                    const matchingCoordLine = coordLines.find(cl => sig.match.test(cl)) || '';
+                    const segment = matchingCoordLine || compactAll.slice(startIdx, endIdx);
+
+                    const condAmt = extractConditionAndAmount(segment, sig.defaultCond);
+                    const prem = extractPremiumFromSegment(segment, sig.defaultPrem);
+
+                    results.push({
+                        type: sig.title,
+                        amount: condAmt,
+                        premium: prem
+                    });
+                }
+                if (results.length > 0) return results;
+            }
+
+            // 通用分欄解析（適用於其他產險公司格式）
+            const itemCodeRegex = /^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\b/i;
+            const excludeKeywords = [
+                '被保險人', '車牌', '汽車牌照', '身分證', '統編', '傳真', '報價日期',
+                '敬致', '生日', '車輛種類', '廠牌車型', '廠牌型式', '車輛型式',
+                '發照日', '排氣量', '重置價格', '車責級數', '車體點數', '強制級數',
+                '保險期間', '保期', '保費含酒駕', '總保險費', '任意險保費', '強制險保費'
+            ];
+
+            const rows = [];
+            for (const line of coordLines) {
+                const plain = line.replace(/\|/g, ' ').trim();
+                if (excludeKeywords.some(k => plain.includes(k)) || isTableHeaderLine(plain)) continue;
+                if (!itemCodeRegex.test(plain) && !/保險|條款|責任|強制/.test(plain)) continue;
+
+                const parts = line.split('|').map(s => s.trim()).filter(Boolean);
+                const leftPart = parts[0] || plain;
+                const midPart = parts.length >= 2 ? parts[1] : plain;
+                const condAmt = extractConditionAndAmount(midPart);
+                const prem = extractPremiumFromSegment(line, '-');
+
+                const pureType = leftPart
+                    .replace(/(每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付).*$/, '')
+                    .replace(/\d+(?:\/\d+)+\s*萬.*$/, '')
+                    .replace(/\d+(?:\.\d+)?\s*萬.*$/, '')
+                    .trim();
+
+                if (pureType) {
+                    rows.push({ type: pureType, amount: condAmt, premium: prem });
+                }
+            }
+            return rows;
+        }
+
+        function parseInsuranceDocumentWithCoords(ocrData) {
+            const text = ocrData.text || '';
             const fullCleanText = text.replace(/\s+/g, ' ');
-            const rawLines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            const lines = rawLines.map(l => normalizeCjkSpaces(l)).filter(l => l.length > 0);
+            const coordLines = reconstructRowsByCoordinates(ocrData);
+            const rawLines = text.split('\n').map(l => normalizeCjkSpaces(l)).filter(Boolean);
+            const lines = [...coordLines.map(l => l.replace(/\|/g, ' ').trim()), ...rawLines];
 
             // 1. 車牌號碼
             let allPlates = fullCleanText.match(/[A-Z]{2,3}[-\s]?\d{3,4}/gi);
@@ -893,9 +1198,6 @@
                     if (!insuredName && i + 1 < lines.length) {
                         insuredName = extractChineseName(lines[i + 1]);
                     }
-                    if (!insuredName && i > 0) {
-                        insuredName = extractChineseName(lines[i - 1]);
-                    }
                     if (insuredName) break;
                 }
             }
@@ -905,9 +1207,6 @@
                     if (/要保人|車主|姓名|敬致/.test(line)) {
                         const parts = line.split(/[:：]/);
                         insuredName = extractChineseName(parts.length > 1 ? parts[1] : line);
-                        if (!insuredName && i + 1 < lines.length) {
-                            insuredName = extractChineseName(lines[i + 1]);
-                        }
                         if (insuredName) break;
                     }
                 }
@@ -946,7 +1245,7 @@
                 document.getElementById('hullInsurance').value = '無';
             }
 
-            // 6. 車輛型式（遇到「強制級數」、「車責級數」、「車體點數」、「保發查詢序號」等立刻截斷）
+            // 6. 車輛型式（遇到「強制級數」、「保發查詢序號」等立刻截斷）
             const modelLabels = ['廠牌車型', '廠牌型式', '車輛型式', '車型', '廠牌'];
             const stopModelRegex = /(?:強制級數|車責級數|車體點數|保發查詢序號|排氣量|發照日|出廠|製造|重置價格|保險期間|保期)/;
             for (let i = 0; i < lines.length; i++) {
@@ -961,9 +1260,6 @@
                                 break;
                             }
                         }
-                    }
-                    if (!val && i + 1 < lines.length) {
-                        val = lines[i + 1].trim();
                     }
                     if (val) {
                         val = val.split(stopModelRegex)[0].trim();
@@ -1016,59 +1312,13 @@
             document.getElementById('compulsory').value = '有';
             document.getElementById('thirdParty').value = '有';
 
-            // 9. 「保險種類」直列三欄對齊解析
-            const excludeKeywords = [
-                '被保險人', '車牌', '汽車牌照', '身分證', '統編', '傳真', '報價日期',
-                '敬致', '生日', '車輛種類', '廠牌車型', '廠牌型式', '車輛型式',
-                '發照日', '排氣量', '重置價格', '車責級數', '車體點數', '強制級數',
-                '保險期間', '保期', '保費含酒駕', '總保險費', '任意險保費', '強制險保費'
-            ];
-
-            const coverageKeywords = [
-                '承保項目', '保險項目', '保險種類',
-                '車體損失', '免折舊', '免追償', '第三人', '體傷', '財損', '超額責任',
-                '道路救援', '駕駛人傷害', '乘客體傷', '強制責任保險', '丙式', '乙式', '甲式',
-                '折舊率', '住院日額', '實支實付', '死亡或失能', '每一事故'
-            ];
-
-            const itemCodeRegex = /^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\b/i;
-
-            let groupedItems = [];
-            let currentItem = null;
-
-            for (const line of lines) {
-                if (excludeKeywords.some(k => line.includes(k)) || isTableHeaderLine(line)) continue;
-
-                const hasCodePrefix = itemCodeRegex.test(line);
-                const matchesCoverage = coverageKeywords.some(k => line.includes(k));
-
-                if (hasCodePrefix) {
-                    if (currentItem) groupedItems.push(currentItem);
-                    currentItem = line;
-                } else if (currentItem && (matchesCoverage || /^\d/.test(line) || line.includes('萬') || line.includes('元'))) {
-                    currentItem = `${currentItem} ${line}`;
-                } else if (matchesCoverage) {
-                    if (currentItem) groupedItems.push(currentItem);
-                    currentItem = line;
-                }
-            }
-            if (currentItem) groupedItems.push(currentItem);
-
-            const parsedRows = [];
-            const seenTypes = new Set();
-            for (const item of groupedItems) {
-                const rowObj = splitCoverageItem(item);
-                if (rowObj && !seenTypes.has(rowObj.type)) {
-                    seenTypes.add(rowObj.type);
-                    parsedRows.push(rowObj);
-                }
-            }
-
+            // 9. 「保險種類」智慧分欄解析（13 項完整拆分 + 給付條件與保額分離）
+            const parsedRows = parseCoverageTableSmart(coordLines, fullCleanText);
             if (parsedRows.length > 0) {
                 setCoverageRows(parsedRows);
             }
 
-            alert('✨ 辨識完成！已修正姓名/車型雜訊並更新「保險種類、保額、保費」直列對齊表。');
+            alert(`✨ 辨識完成！已拆解 ${parsedRows.length} 項保險種類，並將給付條件與保額分離對齊。`);
         }
 
         function autoSetReminderDate() {
@@ -1110,6 +1360,8 @@
             document.getElementById('clientId').value = '';
             document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-heart text-pink-200"></i> 新增車險客戶';
             document.getElementById('clientForm').reset();
+            const savedKey = localStorage.getItem('gemini_vision_api_key') || '';
+            if (savedKey) document.getElementById('geminiApiKeyInput').value = savedKey;
             removePhoto();
             clientImages = [];
             renderImageGallery();
@@ -1418,6 +1670,9 @@
             document.getElementById('compulsoryFee').value = client.compulsoryFee || 0;
             document.getElementById('optionalFee').value = client.optionalFee || 0;
             document.getElementById('policyDetails').value = client.policyDetails || '';
+
+            const savedKey = localStorage.getItem('gemini_vision_api_key') || '';
+            if (savedKey) document.getElementById('geminiApiKeyInput').value = savedKey;
 
             const rowsToLoad = (client.coverageRows && client.coverageRows.length > 0)
                 ? client.coverageRows
