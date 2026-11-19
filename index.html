@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>車險客戶資料管理系統</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome 圖示 -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tesseract.js 文字辨識引擎 -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <!-- SheetJS (支援 Excel 匯入匯出) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- Firebase SDK (v13.4.0 模組化版本) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
@@ -58,10 +53,8 @@
 </head>
 <body class="bg-pink-50/50 flex justify-center min-h-screen text-slate-700">
 
-    <!-- 寬版整頁主容器 -->
     <div id="app-container" class="w-full max-w-[1440px] bg-sky-50/30 min-h-screen shadow-2xl relative flex flex-col rounded-none sm:rounded-3xl my-0 sm:my-3 overflow-hidden border border-pink-100">
 
-        <!-- ================= 登入 / 註冊驗證畫面 ================= -->
         <div id="loginView" class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 flex flex-col items-center justify-center p-6 text-white overflow-y-auto">
             <div class="w-20 h-20 rounded-full bg-pink-500/20 border-2 border-pink-300 flex items-center justify-center shadow-2xl shadow-pink-500/50 mb-4 shrink-0 animate-bounce">
                 <i class="fa-solid fa-car-burst text-3xl text-pink-300"></i>
@@ -114,7 +107,6 @@
             </div>
         </div>
 
-        <!-- ================= 主應用程式畫面 ================= -->
         <div id="mainAppView" class="flex-1 flex flex-col hidden">
             <header class="bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 text-white px-5 sm:px-8 pt-6 pb-5 sticky top-0 z-20 shadow-lg rounded-b-3xl">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
@@ -146,7 +138,6 @@
                     </div>
                 </div>
 
-                <!-- 暱稱設定快捷列 -->
                 <div class="bg-white/15 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex flex-wrap items-center justify-between gap-2 mb-3 text-xs">
                     <span class="text-pink-100"><i class="fa-solid fa-id-badge mr-1 text-pink-300"></i> 我的 LINE 簽名暱稱：</span>
                     <div class="flex items-center gap-2">
@@ -193,7 +184,6 @@
 
     </div>
 
-    <!-- ================= 互動視窗：新增 / 編輯客戶表單（全頁寬度支援） ================= -->
     <div id="clientModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-3 backdrop-blur-xs transition-opacity">
         <div class="bg-white w-full max-w-[1440px] max-h-[95vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200 border border-pink-100">
             <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-6 py-4 flex justify-between items-center">
@@ -207,7 +197,6 @@
                 <form id="clientForm" onsubmit="saveClient(event)">
                     <input type="hidden" id="clientId">
 
-                    <!-- AI 智慧辨識專區 -->
                     <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-4 rounded-2xl border border-pink-200 space-y-3 shadow-inner">
                         <div class="flex flex-wrap justify-between items-center gap-2">
                             <h4 class="text-xs font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析</h4>
@@ -215,7 +204,6 @@
                         </div>
                         <p class="text-xs text-slate-600">自動拆解 13 項險種、分離「保險種類」與「給付條件 / 保額」並直列對齊。若填入 Gemini API Key，更可啟用多模態視覺 AI 辨識！</p>
 
-                        <!-- 選配：Gemini Vision API Key（儲存在本機瀏覽器，啟用同級視覺辨識） -->
                         <div class="flex flex-wrap items-center gap-2 bg-white/80 p-2.5 rounded-xl border border-pink-200 text-xs">
                             <span class="text-indigo-700 font-bold"><i class="fa-solid fa-robot mr-1"></i> 視覺 AI 金鑰 (選填)：</span>
                             <input type="password" id="geminiApiKeyInput" placeholder="貼上 Gemini API Key 可啟用超高精準視覺辨識" class="flex-1 min-w-[220px] bg-pink-50/40 border border-pink-200 rounded-lg px-2.5 py-1 text-xs focus:outline-none">
@@ -371,7 +359,6 @@
                             </div>
                         </div>
 
-                        <!-- 像 Excel 表格一樣的四欄直列對齊區：代號｜保險種類｜給付說明 / 保額｜保費 -->
                         <div class="bg-white rounded-2xl border border-pink-200 p-4 shadow-xs space-y-3">
                             <div class="flex flex-wrap justify-between items-center gap-2">
                                 <label class="block text-xs font-bold text-slate-700">保險種類（直列對齊表：分離給付條件與保額）</label>
@@ -426,7 +413,6 @@
         </div>
     </div>
 
-    <!-- ================= 互動視窗：客戶詳細內容與保單檢視（全頁寬度支援） ================= -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-3 backdrop-blur-xs transition-opacity">
         <div class="bg-white w-full max-w-[1440px] max-h-[95vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-pink-100">
             <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-6 py-4 flex justify-between items-center">
@@ -447,7 +433,6 @@
         </div>
     </div>
 
-    <!-- ================= 全螢幕燈箱檢視器 ================= -->
     <div id="lightboxModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-2">
         <div class="absolute top-4 right-4 flex items-center gap-3 z-10">
             <button onclick="rotateLightbox()" class="bg-white/20 hover:bg-white/30 text-white w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition cursor-pointer">
@@ -671,7 +656,6 @@
 
         function removeAdditionalImage(index) { clientImages.splice(index, 1); renderImageGallery(); }
 
-        /* ================= 直列對齊表：代號與保險種類｜給付條件 / 保額｜保費 ================= */
         function addCoverageRow(typeName = "", amount = "", premium = "") {
             const tbody = document.getElementById('coverageTableBody');
             const tr = document.createElement('tr');
@@ -681,10 +665,10 @@
                     <input type="text" class="cov-type w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(typeName)}" placeholder="例如：31 汽車第三人體傷保險">
                 </td>
                 <td class="py-2 px-5 border-l-2 border-sky-200">
-                    <input type="text" class="cov-amount w-full bg-sky-50/40 border border-sky-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-sky-400 focus:outline-none" value="${escapeHtml(amount)}" placeholder="例如：每一個人傷害 300萬">
+                    <input type="text" class="cov-amount w-full bg-sky-50/40 border border-sky-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-sky-400 focus:outline-none" value="${escapeHtml(amount)}" placeholder="例如：每人 200萬 / 每事故 400萬">
                 </td>
                 <td class="py-2 px-5 border-l-2 border-sky-200">
-                    <input type="text" class="cov-premium w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(premium)}" placeholder="例如：2,084">
+                    <input type="text" class="cov-premium w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(premium)}" placeholder="例如：1,114">
                 </td>
                 <td class="py-2 px-2 text-center">
                     <button type="button" onclick="this.closest('tr').remove()" class="text-rose-500 hover:text-rose-700 p-1.5 cursor-pointer" title="刪除此列">
@@ -726,6 +710,7 @@
             return rows;
         }
 
+        // 強化版舊資料/純文字拆解：正確分離「保險種類」、「每人/每事故保額」與「保費」
         function parseSavedCoverageToRows(text) {
             if (!text) return [];
             const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
@@ -733,23 +718,45 @@
                 const parts = line.split(/\t|\s{2,}/).map(s => s.trim()).filter(Boolean);
                 if (parts.length >= 3) {
                     return {
-                        type: parts[0].replace(/^•\s*/, ''),
+                        type: parts[0].replace(/^-+\s*/, ''),
                         amount: parts[1],
                         premium: parts[2]
                     };
                 }
+
+                // 擷取保費（如「保費 1,114 元」或「保費: 1,114」）
+                let premium = "-";
                 const premMatch = line.match(/保費\s*[:：]?\s*([0-9,]+)\s*元?/);
-                const condAmtMatch = line.match(/((?:每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付|每人|每事故)\s*[^，,]*?\d+(?:\.\d+)?\s*萬(?:\s*\/\s*[^，,]*?\d+(?:\.\d+)?\s*萬)?|\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)/);
+                if (premMatch) {
+                    premium = premMatch[1];
+                }
+
+                // 擷取保額（如「每人 200萬 / 每事故 400萬」、「每事故 50萬」、「20/300/300萬」）
+                let amount = "-";
+                const multiCondMatch = line.match(/((?:每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付|每人|每事故)\s*\d+(?:\.\d+)?\s*萬(?:\s*\/\s*(?:每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付|每人|每事故)?\s*\d+(?:\.\d+)?\s*萬)?)/);
+                const ratioMatch = line.match(/(\d+(?:\/\d+)+\s*萬)/);
+                const singleAmtMatch = line.match(/(\d+(?:\.\d+)?\s*萬)/);
+
+                if (multiCondMatch) {
+                    amount = multiCondMatch[1].replace(/\s+/g, ' ').trim();
+                } else if (ratioMatch) {
+                    amount = ratioMatch[1].replace(/\s+/g, '').trim();
+                } else if (singleAmtMatch) {
+                    amount = singleAmtMatch[1].replace(/\s+/g, '').trim();
+                }
+
                 let cleanType = line
                     .replace(/^-+\s*/, '')
-                    .replace(/保費\s*[:：]?\s*[0-9,]+\s*元?/g, '')
+                    .replace(/[，,]?\s*保費\s*[:：]?\s*[0-9,]+\s*元?/g, '')
                     .replace(/[：:]\s*(?:每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付|每人|每事故).*$/, '')
+                    .replace(/[：:]\s*\d+(?:\/\d+)+\s*萬.*$/, '')
                     .replace(/[，,]\s*$/g, '')
                     .trim();
+
                 return {
                     type: cleanType || line,
-                    amount: condAmtMatch ? condAmtMatch[1].replace(/\s+/g, ' ').trim() : "-",
-                    premium: premMatch ? premMatch[1] : "-"
+                    amount,
+                    premium
                 };
             });
         }
@@ -783,7 +790,6 @@
             `;
         }
 
-        /* ================= 影像預處理（放大灰階二值化提升數字與代號辨識率） ================= */
         function preprocessImageForOCR(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -817,7 +823,6 @@
             });
         }
 
-        /* ================= 多模態視覺 AI 解析（與我同級的結構化讀圖能力） ================= */
         async function callGeminiVisionParser(base64Data, mimeType, apiKey) {
             const prompt = `你是台灣車險報價單解析專家。請精準讀取這張報價單圖片，回傳純 JSON（不要 markdown 標記），格式如下：
 {
@@ -973,7 +978,6 @@
             );
         }
 
-        /* ================= 座標分欄重組 + 完整 13 項險種特徵拆解引擎 ================= */
         function reconstructRowsByCoordinates(ocrData) {
             if (!ocrData || !Array.isArray(ocrData.words) || ocrData.words.length === 0) {
                 return (ocrData?.text || '').split('\n').map(l => normalizeCjkSpaces(l)).filter(Boolean);
@@ -1021,7 +1025,6 @@
             });
         }
 
-        // 針對標準險種關鍵詞拆分（解決 A2/A5、38/62、63/77 黏在一起的問題）
         const knownCoverageSignatures = [
             { code: '07', match: /汽車車體損失保險丙式|車體損失保險丙式/, title: '07 汽車車體損失保險丙式', defaultCond: '', defaultPrem: '4,062' },
             { code: 'A2', match: /全損免折舊附加條款/, title: 'A2 泰安產物汽車車體損失保險全損免折舊附加條款', defaultCond: '', defaultPrem: '56' },
@@ -1041,7 +1044,6 @@
         function extractConditionAndAmount(rawSegment, fallbackCond = '') {
             const clean = normalizeCjkSpaces(rawSegment).replace(/\|/g, ' ');
 
-            // 特殊多行給付條件（如 C6 同時有每一個人傷害 300萬 與 每一意外事故傷害總額 1200萬）
             if (/新乘客體傷|乘客體傷/.test(clean) || (clean.includes('每一個人傷害') && clean.includes('意外事故'))) {
                 const p1 = clean.match(/每一個人傷害\s*(\d+(?:\.\d+)?\s*萬)/);
                 const p2 = clean.match(/每一意外事故傷害總額\s*(\d+(?:\.\d+)?\s*萬)/);
@@ -1049,20 +1051,17 @@
                 if (p2) return `每一個人傷害 300萬 / 每一意外事故傷害總額 ${p2[1].replace(/\s+/g, '')}`;
             }
 
-            // 道路救援 5萬(次)/累計5萬
             if (/道路救援|累計\s*5\s*萬/.test(clean)) {
                 const rescueMatch = clean.match(/(\d+\s*萬\s*\(?次\)?\s*\/\s*累計\s*\d+\s*萬)/);
                 return rescueMatch ? rescueMatch[1].replace(/\s+/g, '') : '5萬(次)/累計5萬';
             }
 
-            // 一般「給付條件 + 保額」組合（藍色線分離目標）
             const condPattern = /(每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付)\s*(\d+(?:\.\d+)?\s*萬)/;
             const m = clean.match(condPattern);
             if (m) {
                 return `${m[1]} ${m[2].replace(/\s+/g, '')}`;
             }
 
-            // 純保額（如 70.9萬、2000萬、20/300/300萬）
             const amtOnly = clean.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)/);
             if (amtOnly) {
                 const amtStr = amtOnly[1].replace(/\s+/g, '');
@@ -1081,7 +1080,6 @@
             }
 
             const clean = normalizeCjkSpaces(rawSegment).replace(/\|/g, ' ');
-            // 排除「萬」後面的數字與自負額「0」
             const withoutAmounts = clean
                 .replace(/\d+(?:\/\d+)+\s*萬/g, ' ')
                 .replace(/\d+(?:\.\d+)?\s*萬/g, ' ')
@@ -1096,10 +1094,8 @@
         }
 
         function parseCoverageTableSmart(coordLines, fullText) {
-            const combined = coordLines.join('\n');
             const compactAll = normalizeCjkSpaces(fullText);
 
-            // 檢查是否為標準多項車險明細（可逐項精準切分 13 項）
             const matchedSigs = knownCoverageSignatures.filter(sig => sig.match.test(compactAll));
             if (matchedSigs.length >= 4) {
                 const results = [];
@@ -1118,7 +1114,6 @@
                         }
                     }
 
-                    // 同時比對座標行中對應的列，確保保費抓得最準
                     const matchingCoordLine = coordLines.find(cl => sig.match.test(cl)) || '';
                     const segment = matchingCoordLine || compactAll.slice(startIdx, endIdx);
 
@@ -1134,7 +1129,6 @@
                 if (results.length > 0) return results;
             }
 
-            // 通用分欄解析（適用於其他產險公司格式）
             const itemCodeRegex = /^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\b/i;
             const excludeKeywords = [
                 '被保險人', '車牌', '汽車牌照', '身分證', '統編', '傳真', '報價日期',
@@ -1175,7 +1169,6 @@
             const rawLines = text.split('\n').map(l => normalizeCjkSpaces(l)).filter(Boolean);
             const lines = [...coordLines.map(l => l.replace(/\|/g, ' ').trim()), ...rawLines];
 
-            // 1. 車牌號碼
             let allPlates = fullCleanText.match(/[A-Z]{2,3}[-\s]?\d{3,4}/gi);
             if (allPlates) {
                 for (let p of allPlates) {
@@ -1188,7 +1181,6 @@
                 }
             }
 
-            // 2. 客戶姓名（嚴格排除「統編」與欄位標題）
             let insuredName = "";
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
@@ -1217,7 +1209,6 @@
                 document.getElementById('name').value = '';
             }
 
-            // 3. 產險公司
             if (fullCleanText.includes('泰安') || fullCleanText.includes('TAIAN')) document.getElementById('insuranceCompany').value = '泰安產物';
             else if (fullCleanText.includes('富邦')) document.getElementById('insuranceCompany').value = '富邦產物';
             else if (fullCleanText.includes('國泰')) document.getElementById('insuranceCompany').value = '國泰世紀產物';
@@ -1226,14 +1217,12 @@
             else if (fullCleanText.includes('旺旺')) document.getElementById('insuranceCompany').value = '旺旺友聯';
             else if (fullCleanText.includes('新安東京')) document.getElementById('insuranceCompany').value = '新安東京海上';
 
-            // 4. 車種
             if (fullCleanText.includes('機車') || fullCleanText.includes('重機') || fullCleanText.includes('輕型機車')) {
                 document.getElementById('vehicleType').value = '機車';
             } else {
                 document.getElementById('vehicleType').value = '汽車';
             }
 
-            // 5. 車體險種類
             const hullCompact = fullCleanText.replace(/\s+/g, '');
             if (hullCompact.includes('甲式') || hullCompact.includes('車體損失保險甲')) {
                 document.getElementById('hullInsurance').value = '甲式';
@@ -1245,7 +1234,6 @@
                 document.getElementById('hullInsurance').value = '無';
             }
 
-            // 6. 車輛型式（遇到「強制級數」、「保發查詢序號」等立刻截斷）
             const modelLabels = ['廠牌車型', '廠牌型式', '車輛型式', '車型', '廠牌'];
             const stopModelRegex = /(?:強制級數|車責級數|車體點數|保發查詢序號|排氣量|發照日|出廠|製造|重置價格|保險期間|保期)/;
             for (let i = 0; i < lines.length; i++) {
@@ -1276,7 +1264,6 @@
                 }
             }
 
-            // 7. 保險期間起訖日
             let dateMatches = fullCleanText.match(/\d{4}[\/\-]\d{2}[\/\-]\d{2}/g);
             if (dateMatches && dateMatches.length >= 2) {
                 document.getElementById('startDate').value = dateMatches[0].replace(/\//g, '-');
@@ -1284,7 +1271,6 @@
                 autoSetReminderDate();
             }
 
-            // 8. 強制險與任意險保費
             let compulsoryFeeFound = 0;
             let optionalFeeFound = 0;
 
@@ -1312,7 +1298,6 @@
             document.getElementById('compulsory').value = '有';
             document.getElementById('thirdParty').value = '有';
 
-            // 9. 「保險種類」智慧分欄解析（13 項完整拆分 + 給付條件與保額分離）
             const parsedRows = parseCoverageTableSmart(coordLines, fullCleanText);
             if (parsedRows.length > 0) {
                 setCoverageRows(parsedRows);
