@@ -58,8 +58,8 @@
 </head>
 <body class="bg-pink-50/50 flex justify-center min-h-screen text-slate-700">
 
-    <!-- 寬版主容器 -->
-    <div id="app-container" class="w-full max-w-[820px] bg-sky-50/30 min-h-screen shadow-2xl relative flex flex-col rounded-none sm:rounded-3xl my-0 sm:my-4 overflow-hidden border border-pink-100">
+    <!-- 寬版整頁主容器 -->
+    <div id="app-container" class="w-full max-w-[1440px] bg-sky-50/30 min-h-screen shadow-2xl relative flex flex-col rounded-none sm:rounded-3xl my-0 sm:my-3 overflow-hidden border border-pink-100">
 
         <!-- ================= 登入 / 註冊驗證畫面 ================= -->
         <div id="loginView" class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 flex flex-col items-center justify-center p-6 text-white overflow-y-auto">
@@ -116,7 +116,7 @@
 
         <!-- ================= 主應用程式畫面 ================= -->
         <div id="mainAppView" class="flex-1 flex flex-col hidden">
-            <header class="bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 text-white px-5 sm:px-7 pt-6 pb-5 sticky top-0 z-20 shadow-lg rounded-b-3xl">
+            <header class="bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 text-white px-5 sm:px-8 pt-6 pb-5 sticky top-0 z-20 shadow-lg rounded-b-3xl">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/30">
@@ -169,14 +169,14 @@
                 </div>
             </header>
 
-            <main class="flex-1 p-4 sm:p-6 pb-32 overflow-y-auto space-y-3" id="clientListContainer">
+            <main class="flex-1 p-4 sm:p-8 pb-32 overflow-y-auto space-y-3" id="clientListContainer">
                 <div id="loadingState" class="flex flex-col items-center justify-center py-20 text-indigo-400">
                     <i class="fa-solid fa-heart-pulse animate-bounce text-4xl mb-3 text-pink-400"></i>
                     <p class="text-sm font-medium">正在把您的溫馨資料打包載入中...</p>
                 </div>
             </main>
 
-            <footer class="bg-white/90 backdrop-blur-md border-t border-pink-100 px-5 sm:px-7 py-3.5 fixed bottom-0 w-full max-w-[820px] z-10 text-xs text-slate-600 shadow-xl space-y-2 rounded-t-3xl">
+            <footer class="bg-white/90 backdrop-blur-md border-t border-pink-100 px-5 sm:px-8 py-3.5 fixed bottom-0 w-full max-w-[1440px] z-10 text-xs text-slate-600 shadow-xl space-y-2 rounded-t-3xl">
                 <div class="flex justify-between items-center font-medium">
                     <div>總客戶：<span id="totalCount" class="font-bold text-violet-600 text-sm">0</span> 位</div>
                     <div class="text-amber-600">即將到期：<span id="expiringCount" class="font-bold text-sm">0</span> 位</div>
@@ -193,17 +193,17 @@
 
     </div>
 
-    <!-- ================= 互動視窗：新增 / 編輯客戶表單 ================= -->
-    <div id="clientModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs transition-opacity">
-        <div class="bg-white w-full max-w-[820px] max-h-[92vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200 border border-pink-100">
-            <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-5 py-4 flex justify-between items-center">
+    <!-- ================= 互動視窗：新增 / 編輯客戶表單（全頁寬度支援） ================= -->
+    <div id="clientModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-3 backdrop-blur-xs transition-opacity">
+        <div class="bg-white w-full max-w-[1440px] max-h-[95vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200 border border-pink-100">
+            <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-6 py-4 flex justify-between items-center">
                 <h3 id="modalTitle" class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-heart text-pink-200"></i> 新增車險客戶</h3>
                 <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 cursor-pointer">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <div class="p-5 overflow-y-auto flex-1 space-y-4">
+            <div class="p-5 sm:p-7 overflow-y-auto flex-1 space-y-4">
                 <form id="clientForm" onsubmit="saveClient(event)">
                     <input type="hidden" id="clientId">
 
@@ -211,9 +211,9 @@
                     <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-4 rounded-2xl border border-pink-200 space-y-3 shadow-inner">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析</h4>
-                            <span class="text-[11px] text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">精準辨識</span>
+                            <span class="text-[11px] text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">Excel 表格直列對齊</span>
                         </div>
-                        <p class="text-xs text-slate-600">上傳報價單圖片，自動填入客戶與車籍資料，並將保險種類整理為整齊對齊的單行明細。</p>
+                        <p class="text-xs text-slate-600">上傳報價單照片，自動整理「保險種類」、「保額」、「保費」三欄直列對齊，並帶入客戶與車籍資料。</p>
                         
                         <label class="w-full bg-white hover:bg-pink-50 text-pink-600 border-2 border-dashed border-pink-300 rounded-2xl py-3.5 px-4 text-center cursor-pointer transition flex items-center justify-center gap-2 font-bold text-xs shadow-sm">
                             <i class="fa-solid fa-cloud-arrow-up text-base text-pink-500"></i> 點擊上傳報價單照片 / 檔案
@@ -229,9 +229,9 @@
                         <button type="button" onclick="removePhoto()" class="text-rose-600 font-bold hover:underline cursor-pointer">清除</button>
                     </div>
 
-                    <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
+                    <div class="bg-pink-50/40 p-4 sm:p-5 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-user mr-1 text-pink-400"></i> 客戶與車輛基本資料</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">客戶姓名 *</label>
                                 <input type="text" id="name" required placeholder="請輸入客戶姓名" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
@@ -240,8 +240,20 @@
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">身分證字號 (業務自行輸入)</label>
                                 <input type="text" id="idNumber" maxlength="10" placeholder="例如：A123456789" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm uppercase font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                             </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">車牌號碼 *</label>
+                                <input type="text" id="plateNumber" required placeholder="例如：BGJ-7701" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm uppercase font-mono tw-plate focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">機車還是汽車</label>
+                                <select id="vehicleType" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
+                                    <option value="汽車">汽車</option>
+                                    <option value="機車">機車</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <label class="block text-xs font-semibold text-slate-600">出生年月日</label>
@@ -257,61 +269,47 @@
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">民國年 / 實歲</label>
                                 <div id="ageDisplay" class="text-xs text-slate-500 bg-white px-3.5 py-2.5 rounded-2xl border border-pink-200 font-medium">請選擇或輸入生日</div>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">車牌號碼 *</label>
-                                <input type="text" id="plateNumber" required placeholder="例如：NVB-8203" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm uppercase font-mono tw-plate focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">機車還是汽車</label>
-                                <select id="vehicleType" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
-                                    <option value="汽車">汽車</option>
-                                    <option value="機車">機車</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-pink-100">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">出廠年份 (製造年份)</label>
-                                <input type="text" id="manufactureYear" placeholder="例如：2022 或 112年" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
+                                <input type="text" id="manufactureYear" placeholder="例如：民國 112 年" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">車輛型式 (廠牌車型 / 廠牌型式)</label>
-                                <input type="text" id="carModel" placeholder="例如：本田(國產) C8041500" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
+                                <input type="text" id="carModel" placeholder="例如：本田 國產 C8041500" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                             </div>
                         </div>
+
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">住址</label>
                             <input type="text" id="address" placeholder="請輸入聯絡住址" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                         </div>
                     </div>
 
-                    <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
+                    <div class="bg-pink-50/40 p-4 sm:p-5 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-building-shield mr-1 text-pink-400"></i> 承保資訊與到期提醒</h4>
                             <button type="button" onclick="setOneYearPeriod()" class="text-xs text-pink-600 hover:text-pink-700 font-bold bg-pink-100 px-3 py-1 rounded-full border border-pink-200 cursor-pointer shadow-xs">
                                 <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 一鍵帶入一年期
                             </button>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">承保產險公司 *</label>
-                            <select id="insuranceCompany" required class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
-                                <option value="">請選擇產險公司</option>
-                                <option value="泰安產物">泰安產物</option>
-                                <option value="富邦產物">富邦產物</option>
-                                <option value="國泰世紀產物">國泰世紀產物</option>
-                                <option value="新光產物">新光產物</option>
-                                <option value="明台產物">明台產物</option>
-                                <option value="旺旺友聯">旺旺友聯</option>
-                                <option value="新安東京海上">新安東京海上</option>
-                                <option value="華南產物">華南產物</option>
-                                <option value="第一產物">第一產物</option>
-                                <option value="台灣產物">台灣產物</option>
-                                <option value="其他">其他產險</option>
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">承保產險公司 *</label>
+                                <select id="insuranceCompany" required class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
+                                    <option value="">請選擇產險公司</option>
+                                    <option value="泰安產物">泰安產物</option>
+                                    <option value="富邦產物">富邦產物</option>
+                                    <option value="國泰世紀產物">國泰世紀產物</option>
+                                    <option value="新光產物">新光產物</option>
+                                    <option value="明台產物">明台產物</option>
+                                    <option value="旺旺友聯">旺旺友聯</option>
+                                    <option value="新安東京海上">新安東京海上</option>
+                                    <option value="華南產物">華南產物</option>
+                                    <option value="第一產物">第一產物</option>
+                                    <option value="台灣產物">台灣產物</option>
+                                    <option value="其他">其他產險</option>
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">承保起日 (生效日) *</label>
                                 <input type="date" id="startDate" required onchange="autoSetReminderDate()" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
@@ -320,16 +318,16 @@
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">到期日 *</label>
                                 <input type="date" id="endDate" required onchange="autoSetReminderDate()" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                             </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-bell text-amber-500 mr-1"></i> 到期前一個月複查提醒日</label>
-                            <input type="date" id="nextReminderDate" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none font-bold text-amber-700 shadow-inner">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1"><i class="fa-solid fa-bell text-amber-500 mr-1"></i> 到期前一個月複查提醒日</label>
+                                <input type="date" id="nextReminderDate" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none font-bold text-amber-700 shadow-inner">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
+                    <div class="bg-pink-50/40 p-4 sm:p-5 rounded-2xl border border-pink-100 space-y-4 mt-3">
                         <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-file-invoice-dollar mr-1 text-pink-400"></i> 承保內容與保費明細</h4>
-                        <div class="grid grid-cols-3 gap-2">
+                        <div class="grid grid-cols-3 gap-3">
                             <div class="bg-white p-2.5 rounded-2xl border border-pink-200 shadow-xs">
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">強制險</label>
                                 <select id="compulsory" class="w-full bg-pink-50/50 border border-pink-200 rounded-xl p-1.5 text-xs font-bold text-indigo-700">
@@ -366,12 +364,28 @@
                             </div>
                         </div>
 
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="block text-xs font-semibold text-slate-600">保險種類</label>
-                                <span class="text-[11px] text-slate-400">代號 名稱 保額 自負額 保費（單行對齊）</span>
+                        <!-- 像 Excel 表格一樣的直列三欄對齊區 -->
+                        <div class="bg-white rounded-2xl border border-pink-200 p-4 shadow-xs space-y-3">
+                            <div class="flex flex-wrap justify-between items-center gap-2">
+                                <label class="block text-xs font-bold text-slate-700">保險種類（直列對齊表）</label>
+                                <button type="button" onclick="addCoverageRow()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1 rounded-xl text-xs font-bold cursor-pointer transition">
+                                    <i class="fa-solid fa-plus mr-1"></i> 新增一列險種
+                                </button>
                             </div>
-                            <textarea id="coverageDetails" rows="12" wrap="off" placeholder="• 07 汽車車體損失保險丙式  70.9萬  0  4,062" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner leading-relaxed overflow-x-auto overflow-y-auto resize-y whitespace-pre"></textarea>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full border-collapse text-left min-w-[680px]">
+                                    <thead>
+                                        <tr class="border-b-2 border-pink-200 text-xs font-bold text-indigo-900 bg-pink-50/70">
+                                            <th class="py-2.5 px-3 w-[52%]">保險種類</th>
+                                            <th class="py-2.5 px-6 w-[24%]">保額</th>
+                                            <th class="py-2.5 px-6 w-[18%]">保費</th>
+                                            <th class="py-2.5 px-2 w-[6%] text-center">刪</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="coverageTableBody" class="divide-y divide-pink-100 text-xs sm:text-sm"></tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div>
@@ -380,14 +394,14 @@
                         </div>
                     </div>
 
-                    <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
+                    <div class="bg-pink-50/40 p-4 sm:p-5 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-images mr-1 text-pink-400"></i> 相關檔案 / 圖片櫃 (保單、行照)</h4>
                             <span id="imageCountBadge" class="text-[11px] bg-pink-200 text-pink-800 px-2.5 py-0.5 rounded-full font-bold">0 張</span>
                         </div>
                         <p class="text-xs text-slate-500">可上傳多張相關圖片供後續調閱查詢：</p>
                         
-                        <div id="additionalImagesContainer" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+                        <div id="additionalImagesContainer" class="grid grid-cols-3 sm:grid-cols-6 gap-2"></div>
 
                         <label class="w-full bg-white hover:bg-pink-50 text-slate-700 border border-pink-200 rounded-2xl py-3 px-4 text-center cursor-pointer transition flex items-center justify-center gap-2 font-bold text-xs shadow-sm">
                             <i class="fa-solid fa-plus text-pink-500"></i> 新增附加圖片
@@ -405,10 +419,10 @@
         </div>
     </div>
 
-    <!-- ================= 互動視窗：客戶詳細內容與保單檢視 ================= -->
-    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs transition-opacity">
-        <div class="bg-white w-full max-w-[820px] max-h-[92vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-pink-100">
-            <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-5 py-4 flex justify-between items-center">
+    <!-- ================= 互動視窗：客戶詳細內容與保單檢視（全頁寬度支援） ================= -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-3 backdrop-blur-xs transition-opacity">
+        <div class="bg-white w-full max-w-[1440px] max-h-[95vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-pink-100">
+            <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-6 py-4 flex justify-between items-center">
                 <div>
                     <h3 id="detailModalName" class="font-bold text-lg">客戶詳細資料</h3>
                     <p id="detailModalPlate" class="text-xs text-pink-100 font-mono tracking-wider"></p>
@@ -422,7 +436,7 @@
                     </button>
                 </div>
             </div>
-            <div id="detailContent" class="p-5 overflow-y-auto flex-1 space-y-4 text-sm bg-pink-50/20"></div>
+            <div id="detailContent" class="p-5 sm:p-7 overflow-y-auto flex-1 space-y-4 text-sm bg-pink-50/20"></div>
         </div>
     </div>
 
@@ -620,7 +634,7 @@
             const container = document.getElementById('additionalImagesContainer');
             document.getElementById('imageCountBadge').innerText = `${clientImages.length} 張`;
             if (clientImages.length === 0) {
-                container.innerHTML = `<div class="col-span-3 sm:col-span-4 text-center py-4 text-xs text-slate-400 bg-white rounded-2xl border border-dashed border-pink-200">尚未上傳任何附加檔案或圖片</div>`;
+                container.innerHTML = `<div class="col-span-3 sm:col-span-6 text-center py-4 text-xs text-slate-400 bg-white rounded-2xl border border-dashed border-pink-200">尚未上傳任何附加檔案或圖片</div>`;
                 return;
             }
             container.innerHTML = clientImages.map((imgSrc, index) => `
@@ -633,6 +647,107 @@
 
         function removeAdditionalImage(index) { clientImages.splice(index, 1); renderImageGallery(); }
 
+        /* ================= 像 Excel 表格一樣的直列三欄資料管理 ================= */
+        function addCoverageRow(typeName = "", amount = "", premium = "") {
+            const tbody = document.getElementById('coverageTableBody');
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-pink-50/40";
+            tr.innerHTML = `
+                <td class="py-2 px-2">
+                    <input type="text" class="cov-type w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(typeName)}" placeholder="例如：07 汽車車體損失保險丙式">
+                </td>
+                <td class="py-2 px-6">
+                    <input type="text" class="cov-amount w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(amount)}" placeholder="例如：70.9萬">
+                </td>
+                <td class="py-2 px-6">
+                    <input type="text" class="cov-premium w-full bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(premium)}" placeholder="例如：4,062">
+                </td>
+                <td class="py-2 px-2 text-center">
+                    <button type="button" onclick="this.closest('tr').remove()" class="text-rose-500 hover:text-rose-700 p-1.5 cursor-pointer" title="刪除此列">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function setCoverageRows(rows) {
+            const tbody = document.getElementById('coverageTableBody');
+            tbody.innerHTML = '';
+            if (!rows || rows.length === 0) {
+                addCoverageRow();
+                return;
+            }
+            rows.forEach(r => addCoverageRow(r.type || "", r.amount || "", r.premium || ""));
+        }
+
+        function getCoverageRowsFromTable() {
+            const rows = [];
+            document.querySelectorAll('#coverageTableBody tr').forEach(tr => {
+                const type = (tr.querySelector('.cov-type')?.value || '').trim();
+                const amount = (tr.querySelector('.cov-amount')?.value || '').trim();
+                const premium = (tr.querySelector('.cov-premium')?.value || '').trim();
+                if (type || amount || premium) {
+                    rows.push({ type, amount, premium });
+                }
+            });
+            return rows;
+        }
+
+        function parseSavedCoverageToRows(text) {
+            if (!text) return [];
+            const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+            return lines.map(line => {
+                const parts = line.split(/\t|\s{2,}/).map(s => s.trim()).filter(Boolean);
+                if (parts.length >= 3) {
+                    return {
+                        type: parts[0].replace(/^•\s*/, ''),
+                        amount: parts[1],
+                        premium: parts[2]
+                    };
+                }
+                return { type: line.replace(/^•\s*/, ''), amount: "-", premium: "-" };
+            });
+        }
+
+        function renderExcelAlignedTableHtml(rows, fallbackText) {
+            const parsed = (rows && rows.length > 0) ? rows : parseSavedCoverageToRows(fallbackText);
+            if (!parsed || parsed.length === 0) {
+                return `<p class="text-xs text-slate-400">未填寫</p>`;
+            }
+            return `
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-left min-w-[680px]">
+                        <thead>
+                            <tr class="border-b-2 border-pink-200 text-xs font-bold text-indigo-900 bg-pink-50/70">
+                                <th class="py-2.5 px-3 w-[52%]">保險種類</th>
+                                <th class="py-2.5 px-6 w-[24%]">保額</th>
+                                <th class="py-2.5 px-6 w-[18%]">保費</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-pink-100 text-xs sm:text-sm">
+                            ${parsed.map(r => `
+                                <tr class="hover:bg-pink-50/40">
+                                    <td class="py-2.5 px-3 text-slate-800">${escapeHtml(r.type || '-')}</td>
+                                    <td class="py-2.5 px-6 font-mono text-indigo-800">${escapeHtml(r.amount || '-')}</td>
+                                    <td class="py-2.5 px-6 font-mono font-semibold text-slate-900">${escapeHtml(r.premium || '-')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        /* ================= OCR 解析與清洗 ================= */
         async function handleQuotationOCR(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -688,51 +803,44 @@
             );
         }
 
-        // 整理單行對齊格式：• 代號 名稱  保額  自負額  保費
-        function formatAlignedRow(rawItem) {
+        // 將單筆項目拆解成 { type, amount, premium } 三欄
+        function splitCoverageItem(rawItem) {
             let clean = normalizeCjkSpaces(rawItem);
-            if (!clean || isTableHeaderLine(clean)) return "";
+            if (!clean || isTableHeaderLine(clean)) return null;
 
-            const codeMatch = clean.match(/^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\b/i);
-            const code = codeMatch ? codeMatch[1].toUpperCase() : "";
-            let rest = codeMatch ? clean.slice(codeMatch[0].length).trim() : clean;
-
-            // 若同一行誤抓到下一個代號開頭的險種，截斷在第二個代號之前
-            const secondCodeIdx = rest.slice(2).search(/\b(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\s+[\u4e00-\u9fa5]{2,}/i);
-            if (secondCodeIdx !== -1) {
-                rest = rest.slice(0, secondCodeIdx + 2).trim();
+            // 若混入下一筆代號開頭的險種，先切斷避免串行
+            const nextCodeIdx = clean.slice(3).search(/\s+(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\s+[\u4e00-\u9fa5]{2,}/i);
+            if (nextCodeIdx !== -1) {
+                clean = clean.slice(0, nextCodeIdx + 3).trim();
             }
 
-            // 擷取保費（結尾金額，例如 4,062 / 56 / 172 / 2,084 / 229 / 3,298 / 520 / 351 / 1 / 642 / 59 / 1,403 / 1,193）
+            // 濾掉自負額「0」或「無」干擾保費抓取
+            clean = clean.replace(/\s+(?:自負額\s*)?(?:無自負額|無|\b0\b)(?=\s+(?:\d{1,3}(?:,\d{3})+|\d{1,5})(?:\s*元)?$)/g, ' ').trim();
+
+            // 抓行尾保費
             let premium = "-";
-            const premMatch = rest.match(/(\d{1,3}(?:,\d{3})+|\d{1,5})(?=\s*(?:元)?$)/);
+            const premMatch = clean.match(/(\d{1,3}(?:,\d{3})+|\d{1,5})(?=\s*(?:元)?$)/);
             if (premMatch) {
                 premium = premMatch[1];
-                rest = rest.slice(0, premMatch.index).trim();
+                clean = clean.slice(0, premMatch.index).trim();
             }
 
-            // 擷取自負額（0 或 無自負額 或 無）
-            let deductible = "無";
-            const dedMatch = rest.match(/(?:自負額\s*)?(無自負額|無|\b0\b)(?=\s*$)/);
-            if (dedMatch) {
-                const dRaw = dedMatch[1];
-                deductible = (dRaw === "0") ? "0" : "無";
-                rest = rest.slice(0, dedMatch.index).trim();
-            }
-
-            // 擷取保額（例如 70.9萬 / 300萬 / 3000萬 / 70萬 / 2000萬 / 5萬 / 0.3萬 / 30萬 / 1200萬 / 20/300/300萬）
+            // 抓保額（如 70.9萬 / 300萬 / 3000萬 / 70萬 / 2000萬 / 5萬 / 0.3萬 / 30萬 / 1200萬 / 20/300/300萬）
             let amount = "-";
-            const amtMatch = rest.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)(?!.*\d+(?:\.\d+)?\s*萬)/);
+            const amtMatch = clean.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)(?!.*\d+(?:\.\d+)?\s*萬)/);
             if (amtMatch) {
                 amount = amtMatch[1].replace(/\s+/g, '');
-                rest = rest.slice(0, amtMatch.index).trim();
+                clean = clean.slice(0, amtMatch.index).trim();
             }
 
-            const title = rest.replace(/\s+/g, ' ').trim();
-            if (!title) return "";
+            // 清理險種名稱尾端殘留的自負額/雜字
+            const typeName = clean
+                .replace(/\s+(?:無自負額|無|\b0\b)$/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
 
-            const prefix = code ? `${code} ${title}` : title;
-            return `• ${prefix.padEnd(28, ' ')} ${amount.padEnd(12, ' ')} ${deductible.padEnd(6, ' ')} ${premium}`;
+            if (!typeName) return null;
+            return { type: typeName, amount, premium };
         }
 
         function parseInsuranceDocumentExact(text) {
@@ -753,7 +861,7 @@
                 }
             }
 
-            // 2. 客戶姓名（不抓身分證字號）
+            // 2. 客戶姓名
             let insuredName = "";
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
@@ -814,8 +922,9 @@
                 document.getElementById('hullInsurance').value = '無';
             }
 
-            // 6. 車輛型式與出廠年份
+            // 6. 車輛型式（遇到下一個欄位標籤自動停住，避免整串吸進來）與出廠年份
             const modelLabels = ['廠牌車型', '廠牌型式', '車輛型式', '車型', '廠牌'];
+            const stopModelRegex = /\s+(?:強制級數|車責級數|車體點數|保發查詢序號|排氣量|發照日|出廠|製造|重置價格|保險期間|保期)\b/;
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 if (modelLabels.some(lbl => line.includes(lbl))) {
@@ -833,6 +942,7 @@
                         val = lines[i + 1].trim();
                     }
                     if (val) {
+                        val = val.split(stopModelRegex)[0].trim();
                         document.getElementById('carModel').value = val;
                         break;
                     }
@@ -882,7 +992,7 @@
             document.getElementById('compulsory').value = '有';
             document.getElementById('thirdParty').value = '有';
 
-            // 9. 「保險種類」整齊單行對齊解析
+            // 9. 「保險種類」直列三欄對齊解析
             const excludeKeywords = [
                 '被保險人', '車牌', '汽車牌照', '身分證', '統編', '傳真', '報價日期',
                 '敬致', '生日', '車輛種類', '廠牌車型', '廠牌型式', '車輛型式',
@@ -920,19 +1030,21 @@
             }
             if (currentItem) groupedItems.push(currentItem);
 
-            const alignedRows = [];
+            const parsedRows = [];
+            const seenTypes = new Set();
             for (const item of groupedItems) {
-                const row = formatAlignedRow(item);
-                if (row && !alignedRows.includes(row)) {
-                    alignedRows.push(row);
+                const rowObj = splitCoverageItem(item);
+                if (rowObj && !seenTypes.has(rowObj.type)) {
+                    seenTypes.add(rowObj.type);
+                    parsedRows.push(rowObj);
                 }
             }
 
-            if (alignedRows.length > 0) {
-                document.getElementById('coverageDetails').value = alignedRows.join('\n');
+            if (parsedRows.length > 0) {
+                setCoverageRows(parsedRows);
             }
 
-            alert('✨ 辨識完成！已更新「保險種類」對齊排列與客戶資料欄位。');
+            alert('✨ 辨識完成！已將「保險種類、保額、保費」整理為整齊直列對齊表格。');
         }
 
         function autoSetReminderDate() {
@@ -977,6 +1089,7 @@
             removePhoto();
             clientImages = [];
             renderImageGallery();
+            setCoverageRows([]);
             setBirthdayMode('ce');
             document.getElementById('clientModal').classList.remove('hidden');
         }
@@ -985,6 +1098,11 @@
         async function saveClient(event) {
             event.preventDefault();
             if (!currentUser) return alert('尚未登入');
+
+            const coverageRows = getCoverageRowsFromTable();
+            const coverageText = coverageRows
+                .map(r => `${r.type}  ${r.amount}  ${r.premium}`)
+                .join('\n');
 
             const id = document.getElementById('clientId').value;
             const clientData = {
@@ -1007,7 +1125,8 @@
                 hullInsurance: document.getElementById('hullInsurance').value,
                 compulsoryFee: Number(document.getElementById('compulsoryFee').value) || 0,
                 optionalFee: Number(document.getElementById('optionalFee').value) || 0,
-                coverageDetails: document.getElementById('coverageDetails').value,
+                coverageRows: coverageRows,
+                coverageDetails: coverageText,
                 policyDetails: document.getElementById('policyDetails').value,
                 photoBase64: "",
                 clientImages: clientImages,
@@ -1101,7 +1220,8 @@
                             hullInsurance: "無",
                             compulsoryFee: Number(row["強制險保費"] || 0),
                             optionalFee: Number(row["任意險保費"] || 0),
-                            coverageDetails: "• 批次匯入資料",
+                            coverageRows: [{ type: "批次匯入資料", amount: "-", premium: "0" }],
+                            coverageDetails: "批次匯入資料  -  0",
                             policyDetails: String(row["備註"] || ''),
                             photoBase64: "",
                             clientImages: [],
@@ -1207,28 +1327,30 @@
                 imagesHtml = `
                     <div class="bg-white p-4 rounded-3xl border border-pink-100 space-y-2 text-xs shadow-sm">
                         <span class="text-slate-400 font-bold block">💖 附加圖片櫃 (${client.clientImages.length} 張)：</span>
-                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2">
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mt-2">
                             ${client.clientImages.map(img => `<div class="rounded-2xl overflow-hidden border border-pink-200 bg-slate-900 h-20 flex items-center justify-center shadow-xs"><img src="${img}" class="max-h-full object-contain cursor-pointer" onclick="openLightbox('${img}')"></div>`).join('')}
                         </div>
                     </div>
                 `;
             }
 
+            const tableHtml = renderExcelAlignedTableHtml(client.coverageRows, client.coverageDetails);
+
             document.getElementById('detailContent').innerHTML = `
                 <div class="space-y-3">
-                    <div class="bg-white p-4 rounded-3xl border border-pink-100 space-y-2 text-xs shadow-sm">
+                    <div class="bg-white p-4 rounded-3xl border border-pink-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs shadow-sm">
                         <div><span class="text-slate-400">身分證字號：</span><span class="font-mono font-bold text-slate-700">${client.idNumber || '未填'}</span></div>
                         <div><span class="text-slate-400">承保公司：</span><span class="font-bold text-violet-600">${client.insuranceCompany}</span></div>
                         <div><span class="text-slate-400">車輛型式：</span><span class="font-bold text-slate-700">${client.carModel || '未填'} (出廠：${client.manufactureYear || '未填'})</span></div>
                         <div><span class="text-slate-400">車體險種類：</span><span class="font-bold text-indigo-700">${client.hullInsurance || '無'}</span></div>
-                        <div><span class="text-slate-400">聯絡住址：</span><span class="font-bold text-slate-700">${client.address || '未填'}</span></div>
                         <div><span class="text-slate-400">到期日：</span><span class="font-bold text-rose-500">${client.endDate}</span></div>
                         <div><span class="text-slate-400">複查提醒日：</span><span class="font-bold text-amber-600">${client.nextReminderDate || '未設定'}</span></div>
+                        <div class="sm:col-span-2 lg:col-span-3"><span class="text-slate-400">聯絡住址：</span><span class="font-bold text-slate-700">${client.address || '未填'}</span></div>
                     </div>
                     <div class="bg-white p-4 rounded-3xl border border-pink-100 space-y-2 text-xs shadow-sm">
-                        <span class="text-slate-400 font-bold block">📝 保險種類：</span>
-                        <p class="font-mono text-slate-700 whitespace-pre leading-relaxed overflow-x-auto max-h-64 overflow-y-auto">${client.coverageDetails || '未填寫'}</p>
-                        <div class="pt-2 border-t border-pink-50 font-bold text-sm text-slate-800 flex justify-between"><span>總保費：</span><span class="text-indigo-600">NT$ ${totalFee.toLocaleString()}</span></div>
+                        <span class="text-slate-400 font-bold block">📝 保險種類明細：</span>
+                        ${tableHtml}
+                        <div class="pt-3 border-t border-pink-50 font-bold text-sm text-slate-800 flex justify-between"><span>總保費：</span><span class="text-indigo-600">NT$ ${totalFee.toLocaleString()}</span></div>
                     </div>
                     ${imagesHtml}
                     <div class="pt-2">
@@ -1271,8 +1393,12 @@
             document.getElementById('hullInsurance').value = client.hullInsurance || '無';
             document.getElementById('compulsoryFee').value = client.compulsoryFee || 0;
             document.getElementById('optionalFee').value = client.optionalFee || 0;
-            document.getElementById('coverageDetails').value = client.coverageDetails || '';
             document.getElementById('policyDetails').value = client.policyDetails || '';
+
+            const rowsToLoad = (client.coverageRows && client.coverageRows.length > 0)
+                ? client.coverageRows
+                : parseSavedCoverageToRows(client.coverageDetails || '');
+            setCoverageRows(rowsToLoad);
 
             if (client.birthdayMode === 'roc') {
                 setBirthdayMode('roc');
