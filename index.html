@@ -714,7 +714,18 @@
                         premium: parts[2]
                     };
                 }
-                return { type: line.replace(/^•\s*/, ''), amount: "-", premium: "-" };
+                const premMatch = line.match(/保費\s*[:：]?\s*([0-9,]+)\s*元?/);
+                const amtMatch = line.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)/);
+                let cleanType = line
+                    .replace(/^-+\s*/, '')
+                    .replace(/保費\s*[:：]?\s*[0-9,]+\s*元?/g, '')
+                    .replace(/[，,]\s*$/g, '')
+                    .trim();
+                return {
+                    type: cleanType || line,
+                    amount: amtMatch ? amtMatch[1].replace(/\s+/g, '') : "-",
+                    premium: premMatch ? premMatch[1] : "-"
+                };
             });
         }
 
@@ -778,16 +789,27 @@
                 .trim();
         }
 
+        const invalidNameTokens = new Set([
+            '統編', '姓名', '被保險人', '要保人', '車主', '身分證', '字號',
+            '車牌', '廠牌', '車型', '保單', '報價單', '保險種類', '承保項目',
+            '保險金額', '自負額', '保險費', '強制險', '任意險', '生效日', '到期日'
+        ]);
+
         function extractChineseName(raw) {
             if (!raw) return "";
             const cleaned = normalizeCjkSpaces(raw)
-                .replace(/被保險人|車主|要保人|姓名|敬致|身分證|字號|[:：]/g, ' ')
+                .replace(/被保險人|車主|要保人|姓名|敬致|身分證|字號|統編|[:：]/g, ' ')
                 .replace(/[A-Za-z0-9*＊\-_/.,，]/g, ' ')
                 .trim();
             const tokens = cleaned.split(/\s+/).filter(Boolean);
             for (const token of tokens) {
                 const zhOnly = token.replace(/[^\u4e00-\u9fa5]/g, '');
-                if (zhOnly.length >= 2 && zhOnly.length <= 4 && !/公司|產物|保險|報價|車牌|汽機車|客貨車|保單|項目|種類|金額|自負額/.test(zhOnly)) {
+                if (
+                    zhOnly.length >= 2 &&
+                    zhOnly.length <= 4 &&
+                    !invalidNameTokens.has(zhOnly) &&
+                    !/公司|產物|保險|報價|車牌|汽機車|客貨車|保單|項目|種類|金額|自負額|統編/.test(zhOnly)
+                ) {
                     return zhOnly;
                 }
             }
@@ -803,21 +825,21 @@
             );
         }
 
-        // 將單筆項目拆解成 { type, amount, premium } 三欄
+        // 切分單筆險種：避免下一筆代號或附加條款串進同一列
         function splitCoverageItem(rawItem) {
             let clean = normalizeCjkSpaces(rawItem);
             if (!clean || isTableHeaderLine(clean)) return null;
 
-            // 若混入下一筆代號開頭的險種，先切斷避免串行
-            const nextCodeIdx = clean.slice(3).search(/\s+(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\s+[\u4e00-\u9fa5]{2,}/i);
-            if (nextCodeIdx !== -1) {
-                clean = clean.slice(0, nextCodeIdx + 3).trim();
+            // 若同一列混入下一個險種代號（如 A5 / 38 / 62 / 63 / 77 / C6 / 21），先切斷
+            const nextCodeMatch = clean.slice(2).match(/(?:\s|^)(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\s*(?=[\u4e00-\u9fa5]{2,})/);
+            if (nextCodeMatch && typeof nextCodeMatch.index === 'number') {
+                clean = clean.slice(0, nextCodeMatch.index + 2).trim();
             }
 
-            // 濾掉自負額「0」或「無」干擾保費抓取
-            clean = clean.replace(/\s+(?:自負額\s*)?(?:無自負額|無|\b0\b)(?=\s+(?:\d{1,3}(?:,\d{3})+|\d{1,5})(?:\s*元)?$)/g, ' ').trim();
+            // 清理自負額標示（無 / 無自負額 / 0），避免誤判成保額或保費
+            clean = clean.replace(/(?:\s|^)(?:自負額\s*)?(?:無自負額|無|\b0\b)(?=\s+(?:\d{1,3}(?:,\d{3})+|\d{1,5})(?:\s*元)?$)/g, ' ').trim();
 
-            // 抓行尾保費
+            // 抓列尾保費
             let premium = "-";
             const premMatch = clean.match(/(\d{1,3}(?:,\d{3})+|\d{1,5})(?=\s*(?:元)?$)/);
             if (premMatch) {
@@ -825,7 +847,7 @@
                 clean = clean.slice(0, premMatch.index).trim();
             }
 
-            // 抓保額（如 70.9萬 / 300萬 / 3000萬 / 70萬 / 2000萬 / 5萬 / 0.3萬 / 30萬 / 1200萬 / 20/300/300萬）
+            // 抓保額（優先抓「萬」單位金額，如 70.9萬 / 300萬 / 3000萬 / 70萬 / 2000萬 / 0.3萬 / 1200萬 / 20/300/300萬）
             let amount = "-";
             const amtMatch = clean.match(/(\d+(?:\/\d+)+\s*萬|\d+(?:\.\d+)?\s*萬)(?!.*\d+(?:\.\d+)?\s*萬)/);
             if (amtMatch) {
@@ -833,9 +855,9 @@
                 clean = clean.slice(0, amtMatch.index).trim();
             }
 
-            // 清理險種名稱尾端殘留的自負額/雜字
+            // 清理尾端殘留的自負額/單字雜訊
             const typeName = clean
-                .replace(/\s+(?:無自負額|無|\b0\b)$/g, '')
+                .replace(/(?:\s|^)(?:無自負額|無|\b0\b)$/g, '')
                 .replace(/\s+/g, ' ')
                 .trim();
 
@@ -861,7 +883,7 @@
                 }
             }
 
-            // 2. 客戶姓名
+            // 2. 客戶姓名（嚴格排除「統編」與欄位標題）
             let insuredName = "";
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
@@ -890,8 +912,10 @@
                     }
                 }
             }
-            if (insuredName) {
+            if (insuredName && insuredName !== '統編') {
                 document.getElementById('name').value = insuredName;
+            } else if (document.getElementById('name').value === '統編') {
+                document.getElementById('name').value = '';
             }
 
             // 3. 產險公司
@@ -922,9 +946,9 @@
                 document.getElementById('hullInsurance').value = '無';
             }
 
-            // 6. 車輛型式（遇到下一個欄位標籤自動停住，避免整串吸進來）與出廠年份
+            // 6. 車輛型式（遇到「強制級數」、「車責級數」、「車體點數」、「保發查詢序號」等立刻截斷）
             const modelLabels = ['廠牌車型', '廠牌型式', '車輛型式', '車型', '廠牌'];
-            const stopModelRegex = /\s+(?:強制級數|車責級數|車體點數|保發查詢序號|排氣量|發照日|出廠|製造|重置價格|保險期間|保期)\b/;
+            const stopModelRegex = /(?:強制級數|車責級數|車體點數|保發查詢序號|排氣量|發照日|出廠|製造|重置價格|保險期間|保期)/;
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 if (modelLabels.some(lbl => line.includes(lbl))) {
@@ -1044,7 +1068,7 @@
                 setCoverageRows(parsedRows);
             }
 
-            alert('✨ 辨識完成！已將「保險種類、保額、保費」整理為整齊直列對齊表格。');
+            alert('✨ 辨識完成！已修正姓名/車型雜訊並更新「保險種類、保額、保費」直列對齊表。');
         }
 
         function autoSetReminderDate() {
