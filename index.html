@@ -361,7 +361,7 @@
 
                         <div class="bg-white rounded-2xl border border-pink-200 p-3 sm:p-4 shadow-xs space-y-3">
                             <div class="flex flex-wrap justify-between items-center gap-2">
-                                <label class="block text-xs sm:text-sm font-bold text-slate-700">保險種類（直列對齊表：分離給付條件與保額）</label>
+                                <label class="block text-xs sm:text-sm font-bold text-slate-700">保險種類（直列對齊表：分離給付條件與保額，可手動微調保費）</label>
                                 <button type="button" onclick="addCoverageRow()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition">
                                     <i class="fa-solid fa-plus mr-1"></i> 新增一列險種
                                 </button>
@@ -471,7 +471,7 @@
                 alert('已清除視覺 AI 金鑰，將使用內建座標表格分欄引擎。');
             } else {
                 localStorage.setItem('gemini_vision_api_key', val);
-                alert('✨ 已儲存 Gemini 視覺 AI 金鑰！上傳報價單時將直接啟用同級多模態視覺辨識。');
+                alert('✨ 已儲存 Gemini 視覺 AI 金鑰！上傳報價單時將直接啟用多模態視覺辨識。');
             }
         }
 
@@ -668,7 +668,7 @@
                     <input type="text" class="cov-amount w-full bg-sky-50/40 border border-sky-200 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-sky-400 focus:outline-none" value="${escapeHtml(amount)}" placeholder="例如：每人 200萬 / 每事故 400萬">
                 </td>
                 <td class="py-2 px-2 sm:px-5 border-l-2 border-sky-200">
-                    <input type="text" class="cov-premium w-full bg-pink-50/30 border border-pink-200 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(premium)}" placeholder="例如：1,114">
+                    <input type="text" class="cov-premium w-full bg-pink-50/30 border border-pink-200 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-mono font-semibold focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(premium)}" placeholder="例如：1,114">
                 </td>
                 <td class="py-2 px-1 sm:px-2 text-center">
                     <button type="button" onclick="this.closest('tr').remove()" class="text-rose-500 hover:text-rose-700 p-1.5 cursor-pointer" title="刪除此列">
@@ -1068,25 +1068,27 @@
             return fallbackCond || '-';
         }
 
-        // 精準抓出最右側保費，避免抓到中間保額或自負額
+        // 保費精準擷取：排除保額（萬、/）與險種代號，優先取最右側金額數字
         function extractPremiumFromSegment(rawSegment, defaultPrem = '-') {
             const parts = rawSegment.split('|').map(s => s.trim()).filter(Boolean);
             if (parts.length >= 2) {
-                const rightCandidate = parts[parts.length - 1];
-                const rMatch = rightCandidate.match(/(\d{1,3}(?:,\d{3})+|\d{1,5})(?:\s*元)?$/);
-                if (rMatch && rMatch[1] !== '0' && !/萬/.test(rightCandidate)) {
-                    return rMatch[1];
+                const rightPart = parts[parts.length - 1];
+                const cleanRight = rightPart.replace(/\d+(?:\.\d+)?\s*萬/g, ' ');
+                const rMatches = cleanRight.match(/\d{1,3}(?:,\d{3})+|\d{1,5}/g);
+                if (rMatches && rMatches.length > 0) {
+                    return rMatches[rMatches.length - 1];
                 }
             }
 
             const clean = normalizeCjkSpaces(rawSegment).replace(/\|/g, ' ');
-            const withoutAmounts = clean
+            const withoutCodeAndAmt = clean
+                .replace(/^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\b/i, ' ')
                 .replace(/\d+(?:\/\d+)+\s*萬/g, ' ')
                 .replace(/\d+(?:\.\d+)?\s*萬/g, ' ')
                 .replace(/(?:自負額\s*)?(?:無自負額|無|\b0\b)/g, ' ')
                 .trim();
 
-            const nums = withoutAmounts.match(/\d{1,3}(?:,\d{3})+|\d{1,5}/g);
+            const nums = withoutCodeAndAmt.match(/\d{1,3}(?:,\d{3})+|\d{1,5}/g);
             if (nums && nums.length > 0) {
                 return nums[nums.length - 1];
             }
@@ -1303,7 +1305,7 @@
                 setCoverageRows(parsedRows);
             }
 
-            alert(`✨ 辨識完成！已拆解 ${parsedRows.length} 項保險種類，並將給付條件與保額分離對齊。`);
+            alert(`✨ 辨識完成！已拆解 ${parsedRows.length} 項保險種類，若有少數保費與報價單不同，可直接點選保費格微調。`);
         }
 
         function autoSetReminderDate() {
@@ -1540,7 +1542,6 @@
             document.body.removeChild(textarea);
         }
 
-        // 整張卡片皆可點選開啟詳細資料，且字體放大
         function renderClientList(dataList) {
             const container = document.getElementById('clientListContainer');
             if (dataList.length === 0) {
