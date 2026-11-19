@@ -199,10 +199,10 @@
 
                     <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-4 rounded-2xl border border-pink-200 space-y-3 shadow-inner">
                         <div class="flex flex-wrap justify-between items-center gap-2">
-                            <h4 class="text-xs sm:text-sm font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析（跨產險詞彙庫）</h4>
-                            <span class="text-xs text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">逐代號對應保額與保費 + 車體險分開與加總</span>
+                            <h4 class="text-xs sm:text-sm font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析（Y軸區間 + 四欄精準對齊）</h4>
+                            <span class="text-xs text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">逐列鎖定保額與保費 + 車體險分開與加總</span>
                         </div>
-                        <p class="text-xs sm:text-sm text-slate-600">支援各產險公司報價單/要保書常見代號與詞彙，無保費自動以 0 顯示，車體險各別列示並自動計算小計。</p>
+                        <p class="text-xs sm:text-sm text-slate-600">依各險種垂直高度鎖定保額與最右側保費（排除自負額干擾），無保費自動以 0 顯示，車體險各別分開列示並自動加總。</p>
 
                         <div class="flex flex-wrap items-center gap-2 bg-white/80 p-2.5 rounded-xl border border-pink-200 text-xs sm:text-sm">
                             <span class="text-indigo-700 font-bold"><i class="fa-solid fa-robot mr-1"></i> 視覺 AI 金鑰 (選填)：</span>
@@ -215,7 +215,7 @@
                             <input type="file" id="ocrInput" accept="image/*" onchange="handleQuotationOCR(event)" class="hidden">
                         </label>
                         <div id="ocrLoading" class="hidden text-center text-xs sm:text-sm text-pink-600 font-bold py-1.5 animate-pulse">
-                            <i class="fa-solid fa-spinner animate-spin mr-1"></i> AI 正在深度掃描各險種代號、保額與保費中，請稍候...
+                            <i class="fa-solid fa-spinner animate-spin mr-1"></i> AI 正在依 Y 軸區間與四欄座標精準對齊各險種保額與保費...
                         </div>
                     </div>
 
@@ -473,7 +473,7 @@
             const val = (document.getElementById('geminiApiKeyInput')?.value || '').trim();
             if (!val) {
                 localStorage.removeItem('gemini_vision_api_key');
-                alert('已清除視覺 AI 金鑰，將使用內建跨產險詞彙與座標引擎。');
+                alert('已清除視覺 AI 金鑰，將使用內建 Y 軸區間與四欄座標引擎。');
             } else {
                 localStorage.setItem('gemini_vision_api_key', val);
                 alert('✨ 已儲存 Gemini 視覺 AI 金鑰！上傳報價單時將直接啟用多模態視覺辨識。');
@@ -662,7 +662,7 @@
         function removeAdditionalImage(index) { clientImages.splice(index, 1); renderImageGallery(); }
 
         function isHullCoverageRow(typeText) {
-            return /車體|甲式|乙式|丙式|折舊|免追償|代號\s*07|07\s|代號\s*A2|A2\s|代號\s*A5|A5\s|50A|50B/i.test(typeText || '');
+            return /車體|甲式|乙式|丙式|折舊|免追償|代號\s*07|\b07\b|代號\s*A2|\bA2\b|代號\s*A5|\bA5\b|50A|50B/i.test(typeText || '');
         }
 
         function parseNumericPremium(val) {
@@ -695,7 +695,7 @@
 
             tr.innerHTML = `
                 <td class="py-2 px-1.5 sm:px-2">
-                    <input type="text" oninput="recalculateHullSubtotal()" class="cov-type w-full bg-pink-50/30 border border-pink-200 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(typeName)}" placeholder="例如：07 車體損失保險">
+                    <input type="text" oninput="recalculateHullSubtotal()" class="cov-type w-full bg-pink-50/30 border border-pink-200 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none" value="${escapeHtml(typeName)}" placeholder="例如：07 汽車車體損失保險丙式">
                 </td>
                 <td class="py-2 px-2 sm:px-5 border-l-2 border-sky-200">
                     <input type="text" class="cov-amount w-full bg-sky-50/40 border border-sky-200 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-sky-400 focus:outline-none" value="${escapeHtml(amount || '-')}" placeholder="給付條件 / 保額">
@@ -872,8 +872,7 @@
 
         async function callGeminiVisionParser(base64Data, mimeType, apiKey) {
             const prompt = `你是台灣車險報價單與要保書解析專家（熟悉泰安、富邦、國泰、新光、明台、旺旺友聯、新安東京海上、華南、第一、台灣產物等條款與代號）。
-請精準讀取這張圖片中的「每一個險種代號」，不可漏項！
-規則：
+請精準讀取這張圖片中的「每一個險種代號」，逐列橫向對齊它的「給付條件 / 保額」與最右側「保費」（嚴格避開中間的自負額欄位）：
 1. 每一個險種代號獨立一列（例如 07、A2、A5、31、B3、32、34、38、62、63、77、C6、21 或其他產險代號），車體險各別分開列示。
 2. 每一列都要有自己的「給付條件 / 保額」與「保費」。
 3. 若該險種沒有保費，保費請填 "0"；若有保費，請精準填入數字（例如 "2,084"）。
@@ -894,7 +893,7 @@
     {
       "type": "代號 + 保險種類名稱",
       "amount": "給付條件 + 保額",
-      "premium": "保費數字，無則填 0"
+      "premium": "最右側保費數字，無則填 0"
     }
   ]
 }`;
@@ -968,10 +967,10 @@
                         loadingDiv.classList.add('hidden');
                         applyStructuredResultToForm(visionData);
                         document.getElementById('photoPreviewContainer').classList.remove('hidden');
-                        alert(`✨ 視覺 AI 辨識完成！已逐代號拆出 ${visionData.items?.length || 0} 項保險種類並計算車體險小計。`);
+                        alert(`✨ 視覺 AI 辨識完成！已逐列對齊 ${visionData.items?.length || 0} 項保險種類並計算車體險小計。`);
                         return;
                     } catch (visionErr) {
-                        console.warn('視覺 AI 備援切換至跨產險座標引擎:', visionErr);
+                        console.warn('視覺 AI 備援切換至 Y 軸區間座標引擎:', visionErr);
                     }
                 }
 
@@ -1033,54 +1032,6 @@
             );
         }
 
-        function reconstructRowsByCoordinates(ocrData) {
-            if (!ocrData || !Array.isArray(ocrData.words) || ocrData.words.length === 0) {
-                return (ocrData?.text || '').split('\n').map(l => normalizeCjkSpaces(l)).filter(Boolean);
-            }
-
-            let maxX = 0;
-            for (const w of ocrData.words) {
-                if (w.bbox && w.bbox.x1 > maxX) maxX = w.bbox.x1;
-            }
-            if (!maxX) maxX = 1000;
-
-            const sorted = [...ocrData.words]
-                .filter(w => w.text && w.text.trim())
-                .sort((a, b) => a.bbox.y0 - b.bbox.y0 || a.bbox.x0 - b.bbox.x0);
-
-            const rowBuckets = [];
-            for (const w of sorted) {
-                const yCenter = (w.bbox.y0 + w.bbox.y1) / 2;
-                const h = Math.max(12, w.bbox.y1 - w.bbox.y0);
-                let target = rowBuckets.find(b => Math.abs(b.y - yCenter) <= h * 0.65);
-                if (!target) {
-                    target = { y: yCenter, words: [] };
-                    rowBuckets.push(target);
-                }
-                target.words.push(w);
-            }
-
-            return rowBuckets.map(bucket => {
-                bucket.words.sort((a, b) => a.bbox.x0 - b.bbox.x0);
-                const leftCol = [];
-                const midCol = [];
-                const rightCol = [];
-
-                for (const w of bucket.words) {
-                    const ratio = w.bbox.x0 / maxX;
-                    if (ratio < 0.42) leftCol.push(w.text);
-                    else if (ratio < 0.84) midCol.push(w.text);
-                    else rightCol.push(w.text);
-                }
-
-                const lText = normalizeCjkSpaces(leftCol.join(' '));
-                const mText = normalizeCjkSpaces(midCol.join(' '));
-                const rText = normalizeCjkSpaces(rightCol.join(' '));
-                return [lText, mText, rText].filter(Boolean).join(' | ');
-            });
-        }
-
-        // 擴充跨產險公司詞彙庫（含車體險分開列示、竊盜險、超額責任、駕駛人/乘客傷害、強制險）
         const knownCoverageSignatures = [
             { code: '07', match: /汽車車體損失保險丙式|車體損失保險丙式|車體損失保險乙式|車體損失保險甲式|汽車車體損失保險/, title: '07 汽車車體損失保險', defaultCond: '-', defaultPrem: '0' },
             { code: '50', match: /汽車竊盜損失保險|竊盜損失保險/, title: '50 汽車竊盜損失保險', defaultCond: '-', defaultPrem: '0' },
@@ -1091,15 +1042,15 @@
             { code: '32', match: /汽車第三人財損保險|第三人財損責任保險/, title: '32 汽車第三人財損保險', defaultCond: '每一事故財損', defaultPrem: '0' },
             { code: '34', match: /汽車超額責任保險|第三人超額責任保險|超額責任保險/, title: '34 汽車超額責任保險', defaultCond: '每一事故', defaultPrem: '0' },
             { code: '38', match: /道路救援費用附加條款|道路救援/, title: '38 汽車保險道路救援費用附加條款', defaultCond: '-', defaultPrem: '0' },
-            { code: '62', match: /住院日額/, title: '62 駕駛人傷害保險傷害醫療給付附加條款（住院日額）', defaultCond: '住院日額', defaultPrem: '0' },
+            { code: '62', match: /住院日額/, title: '62 汽車第三人責任保險附加駕駛人傷害保險傷害醫療給付附加條款', defaultCond: '住院日額', defaultPrem: '0' },
             { code: '63', match: /每一個人死亡或失能|駕駛人傷害保險條款|駕駛人傷害險/, title: '63 汽車第三人責任保險附加駕駛人傷害保險條款', defaultCond: '每一個人死亡或失能', defaultPrem: '0' },
-            { code: '77', match: /實支實付/, title: '77 駕駛人傷害保險傷害醫療給付附加條款（實支實付）', defaultCond: '實支實付', defaultPrem: '0' },
+            { code: '77', match: /實支實付/, title: '77 汽車第三人責任保險附加駕駛人傷害保險傷害醫療給付附加條款', defaultCond: '實支實付', defaultPrem: '0' },
             { code: 'C6', match: /新乘客體傷責任附加條款|乘客體傷責任附加條款|乘客體傷/, title: 'C6 汽車第三人責任保險新乘客體傷責任附加條款', defaultCond: '每一個人傷害 / 每一意外事故傷害總額', defaultPrem: '0' },
             { code: '21', match: /強制責任保險|強制汽車責任保險/, title: '21 強制責任保險', defaultCond: '20/300/300萬', defaultPrem: '0' }
         ];
 
-        function extractConditionAndAmount(rawSegment, fallbackCond = '-') {
-            const clean = normalizeCjkSpaces(rawSegment).replace(/\|/g, ' ');
+        function extractConditionAndAmountFromWords(midWords, fallbackCond = '-') {
+            const clean = normalizeCjkSpaces(midWords.map(w => w.text).join(' '));
 
             if (/新乘客體傷|乘客體傷/.test(clean) || (clean.includes('每一個人傷害') && clean.includes('意外事故'))) {
                 const p1 = clean.match(/每一個人傷害\s*(\d+(?:\.\d+)?\s*萬)/);
@@ -1128,100 +1079,130 @@
             return fallbackCond || '-';
         }
 
-        // 精準擷取保費：無保費時回傳 "0"，避免誤抓保額數字
-        function extractPremiumFromSegment(rawSegment, defaultPrem = '0') {
-            const parts = rawSegment.split('|').map(s => s.trim()).filter(Boolean);
-            if (parts.length >= 2) {
-                const rightPart = parts[parts.length - 1];
-                const cleanRight = rightPart.replace(/\d+(?:\.\d+)?\s*萬/g, ' ');
-                const rMatches = cleanRight.match(/\d{1,3}(?:,\d{3})+|\d{1,5}/g);
-                if (rMatches && rMatches.length > 0) {
-                    return rMatches[rMatches.length - 1];
-                }
-            }
-
-            const clean = normalizeCjkSpaces(rawSegment).replace(/\|/g, ' ');
-            const withoutCodeAndAmt = clean
-                .replace(/^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\b/i, ' ')
-                .replace(/\d+(?:\/\d+)+\s*萬/g, ' ')
-                .replace(/\d+(?:\.\d+)?\s*萬/g, ' ')
-                .replace(/(?:自負額\s*)?(?:無自負額|無)/g, ' ')
-                .trim();
-
-            const nums = withoutCodeAndAmt.match(/\d{1,3}(?:,\d{3})+|\d{1,5}/g);
-            if (nums && nums.length > 0) {
-                return nums[nums.length - 1];
+        function extractPremiumFromRightWords(rightWords, defaultPrem = '0') {
+            const sorted = [...rightWords].sort((a, b) => a.bbox.x0 - b.bbox.x0);
+            const raw = sorted.map(w => w.text).join(' ').replace(/\s+/g, ' ').trim();
+            const clean = raw.replace(/\d+(?:\.\d+)?\s*萬/g, ' ');
+            const matches = clean.match(/\d{1,3}(?:,\d{3})+|\d{1,5}/g);
+            if (matches && matches.length > 0) {
+                return matches[matches.length - 1];
             }
             return defaultPrem || '0';
         }
 
-        function parseCoverageTableSmart(coordLines, fullText) {
+        // Y軸區間鎖定 + 四欄精準對齊引擎
+        function parseCoverageTableByYBand(ocrData, fullText) {
             const compactAll = normalizeCjkSpaces(fullText);
+            const words = Array.isArray(ocrData?.words) ? ocrData.words.filter(w => w.text && w.text.trim() && w.bbox) : [];
+
+            if (words.length === 0) {
+                return knownCoverageSignatures
+                    .filter(sig => sig.match.test(compactAll))
+                    .map(sig => ({ type: sig.title, amount: sig.defaultCond, premium: sig.defaultPrem }));
+            }
+
+            let maxX = 0;
+            for (const w of words) {
+                if (w.bbox.x1 > maxX) maxX = w.bbox.x1;
+            }
+            if (!maxX) maxX = 1000;
+
+            // 找出表格表頭的 Y 座標起點，避免抓到上方「任意險保費 / 總保險費」彙總區
+            const headerWords = words.filter(w => /代號|保險種類|保險金額|保險費/.test(w.text));
+            const tableStartY = headerWords.length > 0
+                ? Math.min(...headerWords.map(w => w.bbox.y0)) - 5
+                : 0;
+
+            const footerWords = words.filter(w => /任意險保費|強制險保費|總保險費/.test(w.text));
+            const tableEndY = footerWords.length > 0
+                ? Math.min(...footerWords.map(w => w.bbox.y0)) - 5
+                : Infinity;
+
+            const tableWords = words.filter(w => {
+                const yc = (w.bbox.y0 + w.bbox.y1) / 2;
+                return yc >= tableStartY && yc <= tableEndY;
+            });
+
+            // 偵測每一列開頭的代號（如 07, A2, A5, 31, B3, 32, 34, 38, 62, 63, 77, C6, 21）
+            const codeAnchors = [];
+            const codeRegex = /^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)$/i;
+
+            for (const w of tableWords) {
+                const ratioX = w.bbox.x0 / maxX;
+                const txt = w.text.trim();
+                if (ratioX < 0.14 && codeRegex.test(txt)) {
+                    codeAnchors.push({
+                        code: txt.toUpperCase(),
+                        y0: w.bbox.y0,
+                        y1: w.bbox.y1,
+                        yCenter: (w.bbox.y0 + w.bbox.y1) / 2
+                    });
+                }
+            }
+
+            codeAnchors.sort((a, b) => a.yCenter - b.yCenter);
+
+            // 去重相近代號錨點
+            const dedupAnchors = [];
+            for (const anc of codeAnchors) {
+                const prev = dedupAnchors[dedupAnchors.length - 1];
+                if (prev && prev.code === anc.code && Math.abs(prev.yCenter - anc.yCenter) < 25) continue;
+                dedupAnchors.push(anc);
+            }
+
             const results = [];
             const seenCodes = new Set();
 
-            // 1. 逐一比對已知險種代號與詞彙，確保每一個出現的險種都有獨立一列、保額與保費
-            for (let i = 0; i < knownCoverageSignatures.length; i++) {
-                const sig = knownCoverageSignatures[i];
-                const matchObj = compactAll.match(sig.match);
-                if (!matchObj) continue;
+            for (let i = 0; i < dedupAnchors.length; i++) {
+                const cur = dedupAnchors[i];
+                const next = dedupAnchors[i + 1];
+                const h = Math.max(16, cur.y1 - cur.y0);
 
-                const startIdx = matchObj.index;
-                let endIdx = compactAll.length;
-                for (let j = i + 1; j < knownCoverageSignatures.length; j++) {
-                    const nextMatch = compactAll.slice(startIdx + 3).match(knownCoverageSignatures[j].match);
-                    if (nextMatch && typeof nextMatch.index === 'number') {
-                        endIdx = startIdx + 3 + nextMatch.index;
-                        break;
-                    }
-                }
+                // 該列的垂直區間：從本列代號上方微幅延伸，到下一列代號上方微幅前（或本列高度 1.6 倍）
+                const bandTop = cur.y0 - h * 0.35;
+                const bandBottom = next
+                    ? Math.min(next.y0 - h * 0.2, cur.y1 + h * 2.1)
+                    : cur.y1 + h * 1.6;
 
-                const matchingCoordLine = coordLines.find(cl => sig.match.test(cl)) || '';
-                const segment = matchingCoordLine || compactAll.slice(startIdx, endIdx);
+                const bandWords = tableWords.filter(w => {
+                    const yc = (w.bbox.y0 + w.bbox.y1) / 2;
+                    return yc >= bandTop && yc <= bandBottom;
+                });
 
-                const condAmt = extractConditionAndAmount(segment, sig.defaultCond);
-                const prem = extractPremiumFromSegment(segment, '0');
+                const leftWords = bandWords.filter(w => (w.bbox.x0 / maxX) < 0.48);
+                const midWords = bandWords.filter(w => {
+                    const rx = w.bbox.x0 / maxX;
+                    return rx >= 0.48 && rx < 0.79;
+                });
+                const rightWords = bandWords.filter(w => (w.bbox.x0 / maxX) >= 0.85);
 
-                seenCodes.add(sig.code);
+                const leftText = normalizeCjkSpaces(leftWords.map(w => w.text).join(' '));
+                const sig = knownCoverageSignatures.find(s => s.code === cur.code || s.match.test(leftText));
+
+                const typeTitle = sig
+                    ? sig.title
+                    : (leftText || `${cur.code} 保險項目`);
+
+                const amount = extractConditionAndAmountFromWords(midWords, sig?.defaultCond || '-');
+                const premium = extractPremiumFromRightWords(rightWords, '0');
+
+                seenCodes.add(cur.code);
                 results.push({
-                    type: sig.title,
-                    amount: condAmt,
-                    premium: prem
+                    type: typeTitle,
+                    amount,
+                    premium
                 });
             }
 
-            // 2. 補充掃描座標列中其他未列到的代號列（確保「每一個代號都要有」）
-            const itemCodeRegex = /^(0\d|1\d|2\d|3\d|4\d|5\d|6\d|7\d|8\d|9\d|[A-Z]\d)\b/i;
-            const excludeKeywords = [
-                '被保險人', '車牌', '汽車牌照', '身分證', '統編', '傳真', '報價日期',
-                '敬致', '生日', '車輛種類', '廠牌車型', '廠牌型式', '車輛型式',
-                '發照日', '排氣量', '重置價格', '車責級數', '車體點數', '強制級數',
-                '保險期間', '保期', '保費含酒駕', '總保險費', '任意險保費', '強制險保費'
-            ];
-
-            for (const line of coordLines) {
-                const plain = line.replace(/\|/g, ' ').trim();
-                if (excludeKeywords.some(k => plain.includes(k)) || isTableHeaderLine(plain)) continue;
-                const codeMatch = plain.match(itemCodeRegex);
-                if (!codeMatch) continue;
-                const codeUpper = codeMatch[1].toUpperCase();
-                if (seenCodes.has(codeUpper)) continue;
-
-                const parts = line.split('|').map(s => s.trim()).filter(Boolean);
-                const leftPart = parts[0] || plain;
-                const midPart = parts.length >= 2 ? parts[1] : plain;
-                const condAmt = extractConditionAndAmount(midPart, '-');
-                const prem = extractPremiumFromSegment(line, '0');
-
-                const pureType = leftPart
-                    .replace(/(每一個人傷害|每一意外事故傷害總額|每一事故之總額|每一事故財損|每一個人死亡或失能|住院日額|實支實付).*$/, '')
-                    .replace(/\d+(?:\/\d+)+\s*萬.*$/, '')
-                    .replace(/\d+(?:\.\d+)?\s*萬.*$/, '')
-                    .trim();
-
-                if (pureType) {
-                    seenCodes.add(codeUpper);
-                    results.push({ type: pureType, amount: condAmt, premium: prem });
+            // 若某些代號因 OCR 切字未落在左緣，仍比對全文已知險種補齊
+            for (const sig of knownCoverageSignatures) {
+                if (seenCodes.has(sig.code)) continue;
+                if (sig.match.test(compactAll)) {
+                    results.push({
+                        type: sig.title,
+                        amount: sig.defaultCond,
+                        premium: '0'
+                    });
                 }
             }
 
@@ -1231,9 +1212,7 @@
         function parseInsuranceDocumentWithCoords(ocrData) {
             const text = ocrData.text || '';
             const fullCleanText = text.replace(/\s+/g, ' ');
-            const coordLines = reconstructRowsByCoordinates(ocrData);
             const rawLines = text.split('\n').map(l => normalizeCjkSpaces(l)).filter(Boolean);
-            const lines = [...coordLines.map(l => l.replace(/\|/g, ' ').trim()), ...rawLines];
 
             let allPlates = fullCleanText.match(/[A-Z]{2,3}[-\s]?\d{3,4}/gi);
             if (allPlates) {
@@ -1248,20 +1227,20 @@
             }
 
             let insuredName = "";
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
+            for (let i = 0; i < rawLines.length; i++) {
+                const line = rawLines[i];
                 if (line.includes('被保險人')) {
                     const afterLabel = line.split(/被保險人/)[1] || '';
                     insuredName = extractChineseName(afterLabel);
-                    if (!insuredName && i + 1 < lines.length) {
-                        insuredName = extractChineseName(lines[i + 1]);
+                    if (!insuredName && i + 1 < rawLines.length) {
+                        insuredName = extractChineseName(rawLines[i + 1]);
                     }
                     if (insuredName) break;
                 }
             }
             if (!insuredName) {
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i];
+                for (let i = 0; i < rawLines.length; i++) {
+                    const line = rawLines[i];
                     if (/要保人|車主|姓名|敬致/.test(line)) {
                         const parts = line.split(/[:：]/);
                         insuredName = extractChineseName(parts.length > 1 ? parts[1] : line);
@@ -1305,8 +1284,8 @@
 
             const modelLabels = ['廠牌車型', '廠牌型式', '車輛型式', '車型', '廠牌'];
             const stopModelRegex = /(?:強制級數|車責級數|車體點數|保發查詢序號|排氣量|發照日|出廠|製造|重置價格|保險期間|保期)/;
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
+            for (let i = 0; i < rawLines.length; i++) {
+                const line = rawLines[i];
                 if (modelLabels.some(lbl => line.includes(lbl))) {
                     const parts = line.split(/[:：]/);
                     let val = parts.length > 1 ? parts.slice(1).join(':').trim() : '';
@@ -1326,7 +1305,7 @@
                 }
             }
 
-            for (let line of lines) {
+            for (let line of rawLines) {
                 if (line.includes('發照日') || line.includes('出廠') || line.includes('製造')) {
                     let yMatch = line.match(/(民國)?\s*(\d{2,3})\s*年/);
                     if (yMatch) document.getElementById('manufactureYear').value = yMatch[0];
@@ -1343,7 +1322,7 @@
             let compulsoryFeeFound = 0;
             let optionalFeeFound = 0;
 
-            for (let line of lines) {
+            for (let line of rawLines) {
                 if (line.includes('強制險保費') || (line.includes('強制') && line.includes('保費'))) {
                     let nums = line.match(/\d[\d,]*/g);
                     if (nums) compulsoryFeeFound = Number(nums[nums.length - 1].replace(/,/g, ''));
@@ -1354,25 +1333,17 @@
                 }
             }
 
-            if (!compulsoryFeeFound) {
-                let compLine = lines.find(l => l.includes('強制責任保險') && /\d{3,4}/.test(l));
-                if (compLine) {
-                    let nums = compLine.match(/\d[\d,]*/g);
-                    if (nums) compulsoryFeeFound = Number(nums[nums.length - 1].replace(/,/g, ''));
-                }
-            }
-
             document.getElementById('compulsoryFee').value = compulsoryFeeFound || 0;
             document.getElementById('optionalFee').value = optionalFeeFound || 0;
             document.getElementById('compulsory').value = '有';
             document.getElementById('thirdParty').value = '有';
 
-            const parsedRows = parseCoverageTableSmart(coordLines, fullCleanText);
+            const parsedRows = parseCoverageTableByYBand(ocrData, fullCleanText);
             if (parsedRows.length > 0) {
                 setCoverageRows(parsedRows);
             }
 
-            alert(`✨ 辨識完成！已逐代號拆解 ${parsedRows.length} 項保險種類，無保費項目已設為 0 並計算車體險小計。`);
+            alert(`✨ Y 軸區間對齊完成！已擷取 ${parsedRows.length} 項保險種類，無保費項目已設為 0 並計算車體險小計。`);
         }
 
         function autoSetReminderDate() {
