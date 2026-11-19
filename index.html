@@ -58,8 +58,8 @@
 </head>
 <body class="bg-pink-50/50 flex justify-center min-h-screen text-slate-700">
 
-    <!-- 行動裝置容器 -->
-    <div id="app-container" class="w-full max-w-[540px] bg-sky-50/30 min-h-screen shadow-2xl relative flex flex-col rounded-none sm:rounded-3xl my-0 sm:my-4 overflow-hidden border border-pink-100">
+    <!-- 寬版主容器 -->
+    <div id="app-container" class="w-full max-w-[820px] bg-sky-50/30 min-h-screen shadow-2xl relative flex flex-col rounded-none sm:rounded-3xl my-0 sm:my-4 overflow-hidden border border-pink-100">
 
         <!-- ================= 登入 / 註冊驗證畫面 ================= -->
         <div id="loginView" class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 flex flex-col items-center justify-center p-6 text-white overflow-y-auto">
@@ -69,7 +69,6 @@
             <h1 class="text-xl font-bold tracking-wide mb-1 text-center">🚗 車險小管家雲端系統</h1>
             <p id="authSubtitle" class="text-pink-200 text-xs text-center mb-6">請登入您的專屬帳號開始使用</p>
             
-            <!-- 登入表單 (支援按 Enter 鍵直接登入) -->
             <div id="loginFormCard" class="w-full max-w-xs space-y-3" onkeydown="if(event.key === 'Enter') handleEmailLogin()">
                 <div>
                     <label class="block text-xs font-semibold text-pink-200 mb-1">電子信箱 (Email)</label>
@@ -90,7 +89,6 @@
                 </div>
             </div>
 
-            <!-- 註冊表單 (支援按 Enter 鍵直接註冊) -->
             <div id="registerFormCard" class="w-full max-w-xs space-y-3 hidden" onkeydown="if(event.key === 'Enter') handleEmailRegister()">
                 <div>
                     <label class="block text-xs font-semibold text-pink-200 mb-1">註冊電子信箱 (Email)</label>
@@ -118,8 +116,8 @@
 
         <!-- ================= 主應用程式畫面 ================= -->
         <div id="mainAppView" class="flex-1 flex flex-col hidden">
-            <header class="bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 text-white px-5 pt-6 pb-5 sticky top-0 z-20 shadow-lg rounded-b-3xl">
-                <div class="flex justify-between items-center mb-3">
+            <header class="bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 text-white px-5 sm:px-7 pt-6 pb-5 sticky top-0 z-20 shadow-lg rounded-b-3xl">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/30">
                             <i class="fa-solid fa-car-side text-white text-xl"></i>
@@ -149,11 +147,11 @@
                 </div>
 
                 <!-- 暱稱設定快捷列 -->
-                <div class="bg-white/15 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center justify-between mb-3 text-xs">
+                <div class="bg-white/15 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex flex-wrap items-center justify-between gap-2 mb-3 text-xs">
                     <span class="text-pink-100"><i class="fa-solid fa-id-badge mr-1 text-pink-300"></i> 我的 LINE 簽名暱稱：</span>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="userNicknameInput" placeholder="請輸入您的簽名暱稱" onkeydown="if(event.key === 'Enter') saveUserNickname()" class="bg-white/20 text-white placeholder-pink-200/60 px-2.5 py-1 rounded-xl text-xs border border-white/30 focus:outline-none w-36 font-bold">
-                        <button type="button" onclick="saveUserNickname()" class="bg-pink-500 hover:bg-pink-400 text-white px-2.5 py-1 rounded-xl font-bold cursor-pointer shadow-xs">儲存</button>
+                        <input type="text" id="userNicknameInput" placeholder="請輸入您的簽名暱稱" onkeydown="if(event.key === 'Enter') saveUserNickname()" class="bg-white/20 text-white placeholder-pink-200/60 px-3 py-1 rounded-xl text-xs border border-white/30 focus:outline-none w-40 font-bold">
+                        <button type="button" onclick="saveUserNickname()" class="bg-pink-500 hover:bg-pink-400 text-white px-3 py-1 rounded-xl font-bold cursor-pointer shadow-xs">儲存</button>
                     </div>
                 </div>
 
@@ -171,14 +169,14 @@
                 </div>
             </header>
 
-            <main class="flex-1 p-4 pb-32 overflow-y-auto space-y-3" id="clientListContainer">
+            <main class="flex-1 p-4 sm:p-6 pb-32 overflow-y-auto space-y-3" id="clientListContainer">
                 <div id="loadingState" class="flex flex-col items-center justify-center py-20 text-indigo-400">
                     <i class="fa-solid fa-heart-pulse animate-bounce text-4xl mb-3 text-pink-400"></i>
                     <p class="text-sm font-medium">正在把您的溫馨資料打包載入中...</p>
                 </div>
             </main>
 
-            <footer class="bg-white/90 backdrop-blur-md border-t border-pink-100 px-5 py-3.5 fixed bottom-0 w-full max-w-[540px] z-10 text-xs text-slate-600 shadow-xl space-y-2 rounded-t-3xl">
+            <footer class="bg-white/90 backdrop-blur-md border-t border-pink-100 px-5 sm:px-7 py-3.5 fixed bottom-0 w-full max-w-[820px] z-10 text-xs text-slate-600 shadow-xl space-y-2 rounded-t-3xl">
                 <div class="flex justify-between items-center font-medium">
                     <div>總客戶：<span id="totalCount" class="font-bold text-violet-600 text-sm">0</span> 位</div>
                     <div class="text-amber-600">即將到期：<span id="expiringCount" class="font-bold text-sm">0</span> 位</div>
@@ -197,7 +195,7 @@
 
     <!-- ================= 互動視窗：新增 / 編輯客戶表單 ================= -->
     <div id="clientModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs transition-opacity">
-        <div class="bg-white w-full max-w-[540px] max-h-[92vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200 border border-pink-100">
+        <div class="bg-white w-full max-w-[820px] max-h-[92vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-200 border border-pink-100">
             <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-5 py-4 flex justify-between items-center">
                 <h3 id="modalTitle" class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-heart text-pink-200"></i> 新增車險客戶</h3>
                 <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 cursor-pointer">
@@ -209,13 +207,13 @@
                 <form id="clientForm" onsubmit="saveClient(event)">
                     <input type="hidden" id="clientId">
 
-                    <!-- 強化 AI 智慧辨識專區 -->
+                    <!-- AI 智慧辨識專區 -->
                     <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-4 rounded-2xl border border-pink-200 space-y-3 shadow-inner">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析</h4>
                             <span class="text-[11px] text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">精準辨識</span>
                         </div>
-                        <p class="text-xs text-slate-600">上傳報價單圖片，系統自動將客戶與車籍填入上方，並在下方產出乾淨整齊的保險項目條列！</p>
+                        <p class="text-xs text-slate-600">上傳報價單圖片，自動填入客戶與車籍資料，並將承保內容整理為乾淨條列。</p>
                         
                         <label class="w-full bg-white hover:bg-pink-50 text-pink-600 border-2 border-dashed border-pink-300 rounded-2xl py-3.5 px-4 text-center cursor-pointer transition flex items-center justify-center gap-2 font-bold text-xs shadow-sm">
                             <i class="fa-solid fa-cloud-arrow-up text-base text-pink-500"></i> 點擊上傳報價單照片 / 檔案
@@ -227,13 +225,13 @@
                     </div>
 
                     <div id="photoPreviewContainer" class="hidden bg-emerald-50 border border-emerald-200 p-3 rounded-2xl flex items-center justify-between text-xs text-emerald-800 mt-3">
-                        <span><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 報價單已成功辨識並精準歸位！</span>
+                        <span><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 報價單已成功辨識並填入欄位！</span>
                         <button type="button" onclick="removePhoto()" class="text-rose-600 font-bold hover:underline cursor-pointer">清除</button>
                     </div>
 
                     <div class="bg-pink-50/40 p-4 rounded-2xl border border-pink-100 space-y-3 mt-3">
                         <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-user mr-1 text-pink-400"></i> 客戶與車輛基本資料</h4>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">客戶姓名 *</label>
                                 <input type="text" id="name" required class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
@@ -250,7 +248,7 @@
                                 <input type="text" id="birthdayROC" placeholder="例: 71-07-05" oninput="calculateAgeFromROC()" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner hidden">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">民國年 / 實歲</label>
                                 <div id="ageDisplay" class="text-xs text-slate-500 bg-white px-3.5 py-2.5 rounded-2xl border border-pink-200 font-medium">請選擇或輸入生日</div>
@@ -260,7 +258,7 @@
                                 <input type="text" id="plateNumber" required placeholder="例如：NVB-8203" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm uppercase font-mono tw-plate focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3 pt-1 border-t border-pink-100">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-pink-100">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">機車還是汽車</label>
                                 <select id="vehicleType" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
@@ -273,7 +271,7 @@
                                 <input type="text" id="manufactureYear" placeholder="例如：2022 或 112年" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">車輛型式 (廠牌)</label>
                                 <input type="text" id="carModel" placeholder="例如：本田(國產) C8041500" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
@@ -309,7 +307,7 @@
                                 <option value="其他">其他產險</option>
                             </select>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">承保起日 (生效日) *</label>
                                 <input type="date" id="startDate" required onchange="autoSetReminderDate()" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
@@ -353,7 +351,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">強制險保費 (元)</label>
                                 <input type="number" id="compulsoryFee" placeholder="0" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
@@ -365,8 +363,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">承保內容明細 (純保障項目條列)</label>
-                            <textarea id="coverageDetails" rows="6" placeholder="純保障項目與金額條列於此..." class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner leading-relaxed"></textarea>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">承保內容明細 (僅列保險項目與金額)</label>
+                            <textarea id="coverageDetails" rows="8" placeholder="• 承保項目條列於此..." class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner leading-relaxed"></textarea>
                         </div>
 
                         <div>
@@ -382,7 +380,7 @@
                         </div>
                         <p class="text-xs text-slate-500">可上傳多張相關圖片供後續調閱查詢：</p>
                         
-                        <div id="additionalImagesContainer" class="grid grid-cols-3 gap-2"></div>
+                        <div id="additionalImagesContainer" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
 
                         <label class="w-full bg-white hover:bg-pink-50 text-slate-700 border border-pink-200 rounded-2xl py-3 px-4 text-center cursor-pointer transition flex items-center justify-center gap-2 font-bold text-xs shadow-sm">
                             <i class="fa-solid fa-plus text-pink-500"></i> 新增附加圖片
@@ -402,7 +400,7 @@
 
     <!-- ================= 互動視窗：客戶詳細內容與保單檢視 ================= -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs transition-opacity">
-        <div class="bg-white w-full max-w-[540px] max-h-[92vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-pink-100">
+        <div class="bg-white w-full max-w-[820px] max-h-[92vh] rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-pink-100">
             <div class="bg-gradient-to-r from-violet-600 to-pink-500 text-white px-5 py-4 flex justify-between items-center">
                 <div>
                     <h3 id="detailModalName" class="font-bold text-lg">客戶詳細資料</h3>
@@ -445,7 +443,7 @@
         let currentUser = null;
         let clientImages = [];
         let birthdayMode = 'ce';
-        let userNickname = "業務專員";
+        let userNickname = "";
 
         window.addEventListener('firebase-ready', () => { initFirebaseAuth(); });
 
@@ -615,7 +613,7 @@
             const container = document.getElementById('additionalImagesContainer');
             document.getElementById('imageCountBadge').innerText = `${clientImages.length} 張`;
             if (clientImages.length === 0) {
-                container.innerHTML = `<div class="col-span-3 text-center py-4 text-xs text-slate-400 bg-white rounded-2xl border border-dashed border-pink-200">尚未上傳任何附加檔案或圖片</div>`;
+                container.innerHTML = `<div class="col-span-3 sm:col-span-4 text-center py-4 text-xs text-slate-400 bg-white rounded-2xl border border-dashed border-pink-200">尚未上傳任何附加檔案或圖片</div>`;
                 return;
             }
             container.innerHTML = clientImages.map((imgSrc, index) => `
@@ -628,7 +626,6 @@
 
         function removeAdditionalImage(index) { clientImages.splice(index, 1); renderImageGallery(); }
 
-        // 🔥 超強精準 AI OCR 解析引擎（修正欄位對應與純化保險條列）
         async function handleQuotationOCR(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -642,7 +639,7 @@
                 await worker.terminate();
                 loadingDiv.classList.add('hidden');
                 
-                parseInsuranceDocumentPrecision(text);
+                parseInsuranceDocumentExact(text);
                 document.getElementById('photoPreviewContainer').classList.remove('hidden');
             } catch (err) {
                 loadingDiv.classList.add('hidden');
@@ -650,7 +647,23 @@
             }
         }
 
-        function parseInsuranceDocumentPrecision(text) {
+        function extractChineseName(raw) {
+            if (!raw) return "";
+            const cleaned = raw
+                .replace(/被保險人|車主|要保人|姓名|敬致|[:：|｜]/g, ' ')
+                .replace(/[A-Za-z0-9*＊\-_/()（）.。,，]/g, ' ')
+                .trim();
+            const tokens = cleaned.split(/\s+/).filter(Boolean);
+            for (const token of tokens) {
+                const zhOnly = token.replace(/[^\u4e00-\u9fa5]/g, '');
+                if (zhOnly.length >= 2 && zhOnly.length <= 4 && !/公司|產物|保險|報價|車牌|汽機車|客貨車/.test(zhOnly)) {
+                    return zhOnly;
+                }
+            }
+            return "";
+        }
+
+        function parseInsuranceDocumentExact(text) {
             const fullCleanText = text.replace(/\s+/g, ' ');
             const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
@@ -667,27 +680,34 @@
                 }
             }
 
-            // 2. 被保險人 / 客戶姓名精準抓取
+            // 2. 被保險人優先填入客戶姓名
+            let insuredName = "";
             for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
-                if (line.includes('被保險人') || line.includes('車主') || line.includes('要保人') || line.includes('姓名') || line.includes('敬致')) {
-                    let parts = line.split(/[:：]/);
-                    if (parts.length > 1 && parts[1].trim()) {
-                        let cleanName = parts[1].trim().split(' ')[0].replace(/[^\u4e00-\u9fa5]/g, '');
-                        if (cleanName.length >= 2 && cleanName.length <= 4) {
-                            document.getElementById('name').value = cleanName;
-                            break;
-                        }
+                const line = lines[i];
+                if (line.includes('被保險人')) {
+                    const afterColon = line.split(/被保險人/)[1] || '';
+                    insuredName = extractChineseName(afterColon);
+                    if (!insuredName && i + 1 < lines.length) {
+                        insuredName = extractChineseName(lines[i + 1]);
                     }
-                    if (i + 1 < lines.length) {
-                        let nextLine = lines[i + 1].trim();
-                        let cleanName = nextLine.split(' ')[0].replace(/[^\u4e00-\u9fa5]/g, '');
-                        if (cleanName.length >= 2 && cleanName.length <= 4 && !cleanName.includes('公司') && !cleanName.includes('產物')) {
-                            document.getElementById('name').value = cleanName;
-                            break;
+                    if (insuredName) break;
+                }
+            }
+            if (!insuredName) {
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (line.includes('要保人') || line.includes('車主') || line.includes('姓名') || line.includes('敬致')) {
+                        const parts = line.split(/[:：]/);
+                        insuredName = extractChineseName(parts.length > 1 ? parts[1] : line);
+                        if (!insuredName && i + 1 < lines.length) {
+                            insuredName = extractChineseName(lines[i + 1]);
                         }
+                        if (insuredName) break;
                     }
                 }
+            }
+            if (insuredName) {
+                document.getElementById('name').value = insuredName;
             }
 
             // 3. 產險公司判定
@@ -706,12 +726,13 @@
                 document.getElementById('vehicleType').value = '汽車';
             }
 
-            // 5. 車體險種類精準對應 (甲式 / 乙式 / 丙式)
-            if (fullCleanText.includes('甲式') || fullCleanText.includes('車體損失保險甲式')) {
+            // 5. 車體險種類自動對應 (甲式 / 乙式 / 丙式)
+            const hullCompact = fullCleanText.replace(/\s+/g, '');
+            if (hullCompact.includes('甲式') || hullCompact.includes('車體損失保險甲')) {
                 document.getElementById('hullInsurance').value = '甲式';
-            } else if (fullCleanText.includes('乙式') || fullCleanText.includes('車體損失保險乙式')) {
+            } else if (hullCompact.includes('乙式') || hullCompact.includes('車體損失保險乙')) {
                 document.getElementById('hullInsurance').value = '乙式';
-            } else if (fullCleanText.includes('丙式') || fullCleanText.includes('車體損失保險丙式') || fullCleanText.includes('車體損失保險丙')) {
+            } else if (hullCompact.includes('丙式') || hullCompact.includes('車體損失保險丙') || hullCompact.includes('車體損失保險')) {
                 document.getElementById('hullInsurance').value = '丙式';
             } else {
                 document.getElementById('hullInsurance').value = '無';
@@ -765,48 +786,36 @@
             document.getElementById('compulsory').value = '有';
             document.getElementById('thirdParty').value = '有';
 
-            // 9. 嚴格過濾與純化：下方承保內容「絕對不放」客人姓名、車牌、身分證、傳真、日期等雜訊，只留純保險項目與保費
-            let cleanDetails = [];
-            for (let line of lines) {
-                let l = line.trim();
-                // 排除包含無關資訊的行
-                if (
-                    l.includes('被保險人') || l.includes('車牌') || l.includes('身分證') || 
-                    l.includes('統編') || l.includes('傳真號碼') || l.includes('報價日期') || 
-                    l.includes('敬致') || l.includes('生日') || l.includes('排氣量') || 
-                    l.includes('重置價格') || l.includes('車責級數') || l.includes('車體點數') || 
-                    l.includes('強制級數') || l.includes('保險期間') || l.includes('保費含酒駕') ||
-                    l.includes('總保險費') || l.includes('任意險保費') || l.includes('強制險保費')
-                ) {
-                    continue;
-                }
+            // 9. 純化承保內容條列（僅留保險項目與金額，排除客戶/車籍/日期/總計雜訊）
+            const excludeKeywords = [
+                '被保險人', '車牌', '汽車牌照', '身分證', '統編', '傳真', '報價日期',
+                '敬致', '生日', '車輛種類', '廠牌車型', '發照日', '排氣量', '重置價格',
+                '車責級數', '車體點數', '強制級數', '保險期間', '保期', '保費含酒駕',
+                '總保險費', '任意險保費', '強制險保費', '代號', '保險種類', '保險金額', '自負額'
+            ];
+            const coverageKeywords = [
+                '車體損失', '免折舊', '追償', '第三人', '體傷', '財損', '超額責任',
+                '道路救援', '駕駛人傷害', '乘客體傷', '強制責任保險', '丙式', '乙式', '甲式'
+            ];
 
-                // 保留真正包含保險保障項目的行
-                if (
-                    l.includes('保險') || l.includes('責任') || l.includes('附加') || 
-                    l.includes('強制') || l.includes('車體') || l.includes('條款') || 
-                    l.includes('代號') || /^\d{2}\s/.test(l)
-                ) {
-                    // 清理排版，確保乾淨條列
-                    cleanDetails.push("- " + l.replace(/^[-–—•]\s*/, ''));
+            let bulletItems = [];
+            for (const rawLine of lines) {
+                const cleanLine = rawLine.replace(/^[•·\-–—*]+\s*/, '').replace(/\s+/g, ' ').trim();
+                if (!cleanLine || cleanLine.length < 3) continue;
+                if (excludeKeywords.some(k => cleanLine.includes(k))) continue;
+
+                const isCoverage = coverageKeywords.some(k => cleanLine.includes(k)) || /^\d{2}\s+/.test(cleanLine);
+                if (isCoverage) {
+                    const formattedLine = cleanLine.replace(/^\d{2}\s+/, '');
+                    bulletItems.push(`• ${formattedLine}`);
                 }
             }
 
-            if (cleanDetails.length > 0) {
-                document.getElementById('coverageDetails').value = cleanDetails.slice(0, 18).join('\n');
-            } else {
-                document.getElementById('coverageDetails').value = [
-                    "- 汽車車體損失保險丙式",
-                    "- 汽車第三人體傷險 (每人/每事故 300萬)",
-                    "- 汽車第三人財損險 (每事故 70萬)",
-                    "- 汽車超額責任保險 (2000萬)",
-                    "- 道路救援費用附加條款",
-                    "- 駕駛人傷害保險附約",
-                    "- 強制責任保險 (20/300/300萬)"
-                ].join('\n');
+            if (bulletItems.length > 0) {
+                document.getElementById('coverageDetails').value = bulletItems.slice(0, 20).join('\n');
             }
 
-            alert('✨ 報價單解析完成！車體險已自動對應，下方明細也已過濾乾淨為純保險項目！');
+            alert('✨ 辨識完成！已填入客戶姓名、車體險種類與條列式承保內容。');
         }
 
         function autoSetReminderDate() {
@@ -972,7 +981,7 @@
                             hullInsurance: "無",
                             compulsoryFee: Number(row["強制險保費"] || 0),
                             optionalFee: Number(row["任意險保費"] || 0),
-                            coverageDetails: "- 批次匯入資料",
+                            coverageDetails: "• 批次匯入資料",
                             policyDetails: String(row["備註"] || ''),
                             photoBase64: "",
                             clientImages: [],
@@ -1000,7 +1009,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // 結尾自動帶入使用者設定的專屬暱稱
         function sendLineNotification(name, plate, endDate) {
             const signature = userNickname ? `${userNickname} 敬上` : "您的保險專員 敬上";
             const message = `【車險到期貼心提醒】\n親愛的 ${name} 您好：\n您的愛車 (${plate}) 強任意險保單將於 ${endDate} 到期。\n為確保行車保障不中斷，歡迎隨時與我聯繫辦理續保！\n${signature}`;
@@ -1079,7 +1087,7 @@
                 imagesHtml = `
                     <div class="bg-white p-4 rounded-3xl border border-pink-100 space-y-2 text-xs shadow-sm">
                         <span class="text-slate-400 font-bold block">💖 附加圖片櫃 (${client.clientImages.length} 張)：</span>
-                        <div class="grid grid-cols-3 gap-2 mt-2">
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2">
                             ${client.clientImages.map(img => `<div class="rounded-2xl overflow-hidden border border-pink-200 bg-slate-900 h-20 flex items-center justify-center shadow-xs"><img src="${img}" class="max-h-full object-contain cursor-pointer" onclick="openLightbox('${img}')"></div>`).join('')}
                         </div>
                     </div>
@@ -1091,6 +1099,7 @@
                     <div class="bg-white p-4 rounded-3xl border border-pink-100 space-y-2 text-xs shadow-sm">
                         <div><span class="text-slate-400">承保公司：</span><span class="font-bold text-violet-600">${client.insuranceCompany}</span></div>
                         <div><span class="text-slate-400">車輛型式：</span><span class="font-bold text-slate-700">${client.carModel || '未填'} (出廠：${client.manufactureYear || '未填'})</span></div>
+                        <div><span class="text-slate-400">車體險種類：</span><span class="font-bold text-indigo-700">${client.hullInsurance || '無'}</span></div>
                         <div><span class="text-slate-400">聯絡住址：</span><span class="font-bold text-slate-700">${client.address || '未填'}</span></div>
                         <div><span class="text-slate-400">到期日：</span><span class="font-bold text-rose-500">${client.endDate}</span></div>
                         <div><span class="text-slate-400">複查提醒日：</span><span class="font-bold text-amber-600">${client.nextReminderDate || '未設定'}</span></div>
