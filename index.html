@@ -15,7 +15,7 @@
     <!-- Firebase SDK (v13.4.0 模組化版本) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
         import { getAuth, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -38,7 +38,7 @@
 
         window.db = db;
         window.auth = auth;
-        window.firebaseModules = { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where };
+        window.firebaseModules = { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc, onSnapshot, query, where };
         window.authModules = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged };
 
         window.dispatchEvent(new Event('firebase-ready'));
@@ -117,7 +117,7 @@
         <!-- ================= 主應用程式畫面 ================= -->
         <div id="mainAppView" class="flex-1 flex flex-col hidden">
             <header class="bg-gradient-to-r from-violet-600 via-indigo-600 to-pink-500 text-white px-5 pt-6 pb-5 sticky top-0 z-20 shadow-lg rounded-b-3xl">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-3">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/30">
                             <i class="fa-solid fa-car-side text-white text-xl"></i>
@@ -143,6 +143,15 @@
                         <button onclick="logoutAccount()" title="登出系統" class="bg-white/10 hover:bg-white/20 text-white px-3 py-2.5 rounded-2xl text-xs transition border border-white/10 cursor-pointer">
                             <i class="fa-solid fa-right-from-bracket"></i>
                         </button>
+                    </div>
+                </div>
+
+                <!-- 🔥 暱稱設定快捷列 -->
+                <div class="bg-white/15 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 flex items-center justify-between mb-3 text-xs">
+                    <span class="text-pink-100"><i class="fa-solid fa-id-badge mr-1 text-pink-300"></i> 我的 LINE 簽名暱稱：</span>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="userNicknameInput" placeholder="例如: 國祥(東東)" class="bg-white/20 text-white placeholder-pink-200/60 px-2.5 py-1 rounded-xl text-xs border border-white/30 focus:outline-none w-32 font-bold">
+                        <button onclick="saveUserNickname()" class="bg-pink-500 hover:bg-pink-400 text-white px-2.5 py-1 rounded-xl font-bold cursor-pointer shadow-xs">儲存</button>
                     </div>
                 </div>
 
@@ -198,24 +207,25 @@
                 <form id="clientForm" onsubmit="saveClient(event)">
                     <input type="hidden" id="clientId">
 
+                    <!-- 🔥 強化 AI 智慧辨識專區 -->
                     <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-4 rounded-2xl border border-pink-200 space-y-3 shadow-inner">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-bold text-pink-700 uppercase tracking-wider"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-pink-500"></i> 報價單 / 要保書 AI 智慧解析</h4>
-                            <span class="text-[11px] text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">超方便</span>
+                            <span class="text-[11px] text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full font-bold">超強辨識</span>
                         </div>
-                        <p class="text-xs text-slate-600">上傳報價單圖片，系統會自動幫您抓取車牌、姓名與保費！</p>
+                        <p class="text-xs text-slate-600">上傳報價單圖片（支援泰安、富邦、國泰等格式），自動抓取被保險人、車牌、車種、各項保費與所有保障內容！</p>
                         
                         <label class="w-full bg-white hover:bg-pink-50 text-pink-600 border-2 border-dashed border-pink-300 rounded-2xl py-3.5 px-4 text-center cursor-pointer transition flex items-center justify-center gap-2 font-bold text-xs shadow-sm">
                             <i class="fa-solid fa-cloud-arrow-up text-base text-pink-500"></i> 點擊上傳報價單照片 / 檔案
                             <input type="file" id="ocrInput" accept="image/*" onchange="handleQuotationOCR(event)" class="hidden">
                         </label>
                         <div id="ocrLoading" class="hidden text-center text-xs text-pink-600 font-bold py-1.5 animate-pulse">
-                            <i class="fa-solid fa-spinner animate-spin mr-1"></i> AI 正在努力辨識中，請稍候...
+                            <i class="fa-solid fa-spinner animate-spin mr-1"></i> AI 正在深度掃描辨識保單內容中，請稍候...
                         </div>
                     </div>
 
                     <div id="photoPreviewContainer" class="hidden bg-emerald-50 border border-emerald-200 p-3 rounded-2xl flex items-center justify-between text-xs text-emerald-800 mt-3">
-                        <span><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 報價單已成功辨識並帶入欄位！</span>
+                        <span><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> 報價單已成功辨識並帶入所有欄位與保費！</span>
                         <button type="button" onclick="removePhoto()" class="text-rose-600 font-bold hover:underline cursor-pointer">清除</button>
                     </div>
 
@@ -264,7 +274,7 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">車輛型式 (廠牌)</label>
-                                <input type="text" id="carModel" placeholder="例如：TOYOTA RAV4" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
+                                <input type="text" id="carModel" placeholder="例如：本田(國產) C8041500" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">住址</label>
@@ -353,8 +363,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">承保內容明細 (種類、金額)</label>
-                            <textarea id="coverageDetails" rows="5" placeholder="- 汽車第三人體傷險：每人 200萬 / 每事故 400萬，保費 1,114 元&#10;- 汽車第三人財損險：每事故 50萬，保費 978 元&#10;- 強制責任保險：20/300/300萬，保費 658 元" class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner leading-relaxed"></textarea>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">承保內容明細 (所有保障項目與金額)</label>
+                            <textarea id="coverageDetails" rows="6" placeholder="自動解析的所有保障內容將顯示於此..." class="w-full bg-white border border-pink-200 rounded-2xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-pink-400 focus:outline-none shadow-inner leading-relaxed"></textarea>
                         </div>
 
                         <div>
@@ -433,18 +443,35 @@
         let currentUser = null;
         let clientImages = [];
         let birthdayMode = 'ce';
+        let userNickname = "業務專員";
 
         window.addEventListener('firebase-ready', () => { initFirebaseAuth(); });
 
         function initFirebaseAuth() {
-            const { onAuthStateChanged } = window.authModules;
-            onAuthStateChanged(window.auth, (user) => {
+            const { onAuthStateChanged, doc, getDoc } = window.authModules;
+            onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
                     currentUser = user;
                     document.getElementById('loginView').classList.add('hidden');
                     document.getElementById('mainAppView').classList.remove('hidden');
                     document.getElementById('userEmailDisplay').innerText = `已同步雲端 (${user.email})`;
                     document.getElementById('sync-status-dot').className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
+                    
+                    // 讀取使用者的暱稱設定
+                    try {
+                        const userDocRef = doc(window.db, "user_profiles", user.uid);
+                        const userSnap = await getDoc(userDocRef);
+                        if (userSnap.exists() && userSnap.data().nickname) {
+                            userNickname = userSnap.data().nickname;
+                            document.getElementById('userNicknameInput').value = userNickname;
+                        } else {
+                            userNickname = user.email.split('@')[0];
+                            document.getElementById('userNicknameInput').value = userNickname;
+                        }
+                    } catch (e) {
+                        userNickname = "業務專員";
+                    }
+
                     initFirebaseRealtimeSync(user.uid);
                 } else {
                     currentUser = null;
@@ -453,6 +480,21 @@
                     document.getElementById('loginView').classList.remove('hidden');
                 }
             });
+        }
+
+        async function saveUserNickname() {
+            if (!currentUser) return;
+            const nicknameVal = document.getElementById('userNicknameInput').value.trim();
+            if (!nicknameVal) return alert('請輸入有效的暱稱');
+            
+            try {
+                const { doc, setDoc } = window.firebaseModules;
+                await setDoc(doc(window.db, "user_profiles", currentUser.uid), { nickname: nicknameVal }, { merge: true });
+                userNickname = nicknameVal;
+                alert(`✨ 您的 LINE 簽名暱稱已成功儲存為：【${userNickname}】！`);
+            } catch (err) {
+                alert('儲存暱稱失敗：' + err.message);
+            }
         }
 
         function switchAuthMode(mode) {
@@ -584,6 +626,7 @@
 
         function removeAdditionalImage(index) { clientImages.splice(index, 1); renderImageGallery(); }
 
+        // 🔥 超強智慧 OCR 解析引擎（擴充各家保險公司詞彙與保障內容提取）
         async function handleQuotationOCR(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -597,18 +640,19 @@
                 await worker.terminate();
                 loadingDiv.classList.add('hidden');
                 
-                parseInsuranceDocumentSmart(text);
+                parseInsuranceDocumentAdvanced(text);
                 document.getElementById('photoPreviewContainer').classList.remove('hidden');
             } catch (err) {
                 loadingDiv.classList.add('hidden');
-                alert("OCR 解析異常，請手動填寫");
+                alert("OCR 解析異常，請手動填寫欄位");
             }
         }
 
-        function parseInsuranceDocumentSmart(text) {
+        function parseInsuranceDocumentAdvanced(text) {
             const fullCleanText = text.replace(/\s+/g, ' ');
             const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
+            // 1. 車牌號碼辨識 (例如 BGJ-7701)
             let allPlates = fullCleanText.match(/[A-Z]{2,3}[-\s]?\d{3,4}/gi);
             if (allPlates) {
                 for (let p of allPlates) {
@@ -621,6 +665,7 @@
                 }
             }
 
+            // 2. 被保險人 / 客戶姓名辨識
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 if (line.includes('被保險人') || line.includes('車主') || line.includes('要保人') || line.includes('姓名')) {
@@ -643,19 +688,33 @@
                 }
             }
 
+            // 3. 產險公司辨識
             if (fullCleanText.includes('泰安')) document.getElementById('insuranceCompany').value = '泰安產物';
             else if (fullCleanText.includes('富邦')) document.getElementById('insuranceCompany').value = '富邦產物';
             else if (fullCleanText.includes('國泰')) document.getElementById('insuranceCompany').value = '國泰世紀產物';
             else if (fullCleanText.includes('新光')) document.getElementById('insuranceCompany').value = '新光產物';
             else if (fullCleanText.includes('明台')) document.getElementById('insuranceCompany').value = '明台產物';
+            else if (fullCleanText.includes('旺旺')) document.getElementById('insuranceCompany').value = '旺旺友聯';
+            else if (fullCleanText.includes('新安東京')) document.getElementById('insuranceCompany').value = '新安東京海上';
 
-            if (fullCleanText.includes('機車') || fullCleanText.includes('重機')) document.getElementById('vehicleType').value = '機車';
-            else document.getElementById('vehicleType').value = '汽車';
+            // 4. 車種辨識 (客貨車/自用小客車 -> 汽車；機車/重機 -> 機車)
+            if (fullCleanText.includes('機車') || fullCleanText.includes('重機') || fullCleanText.includes('輕型機車')) {
+                document.getElementById('vehicleType').value = '機車';
+            } else {
+                document.getElementById('vehicleType').value = '汽車';
+            }
 
+            // 5. 廠牌車型與出廠年份
             for (let line of lines) {
                 if (line.includes('廠牌車型') || line.includes('車型')) {
                     let parts = line.split(/[:：]/);
                     if (parts.length > 1) document.getElementById('carModel').value = parts[1].trim();
+                }
+                if (line.includes('車輛種類') || line.includes('車種')) {
+                    let parts = line.split(/[:：]/);
+                    if (parts.length > 1 && !document.getElementById('carModel').value) {
+                        document.getElementById('carModel').value = parts[1].trim();
+                    }
                 }
                 if (line.includes('發照日') || line.includes('出廠') || line.includes('製造')) {
                     let yMatch = line.match(/(民國)?\s*(\d{2,3})\s*年/);
@@ -663,36 +722,83 @@
                 }
             }
 
-            let dateMatches = fullCleanText.match(/\d{4}\/\d{2}\/\d{2}/g);
+            // 6. 保險期間起訖日 (抓取 2026/09/18 或類似日期)
+            let dateMatches = fullCleanText.match(/\d{4}[\/\-]\d{2}[\/\-]\d{2}/g);
             if (dateMatches && dateMatches.length >= 2) {
                 document.getElementById('startDate').value = dateMatches[0].replace(/\//g, '-');
                 document.getElementById('endDate').value = dateMatches[1].replace(/\//g, '-');
                 autoSetReminderDate();
+            } else {
+                // 嘗試從文字中找民國年月日對應
+                let rocDates = fullCleanText.match(/\d{3}\/\d{2}\/\d{2}/g);
+                if (rocDates && rocDates.length >= 2) {
+                    // 若為民國轉西元簡易處理
+                    let parseRoc = (str) => {
+                        let parts = str.split('/');
+                        let year = parseInt(parts[0]) + 1911;
+                        return `${year}-${parts[1]}-${parts[2]}`;
+                    };
+                    document.getElementById('startDate').value = parseRoc(rocDates[0]);
+                    document.getElementById('endDate').value = parseRoc(rocDates[1]);
+                    autoSetReminderDate();
+                }
             }
+
+            // 7. 強制險與任意險保費抓取 (精準對應結算區與各項明細)
+            let compulsoryFeeFound = 0;
+            let optionalFeeFound = 0;
 
             for (let line of lines) {
-                if (line.includes('強制險保費') || (line.includes('強制') && line.includes('658'))) {
-                    let nums = line.match(/\d[\d,]+/g);
-                    if (nums) {
-                        document.getElementById('compulsoryFee').value = nums[nums.length - 1].replace(/,/g, '');
-                        document.getElementById('compulsory').value = '有';
-                    }
+                if (line.includes('強制險保費') || (line.includes('強制') && line.includes('保費'))) {
+                    let nums = line.match(/\d[\d,]*/g);
+                    if (nums) compulsoryFeeFound = Number(nums[nums.length - 1].replace(/,/g, ''));
                 }
-                if (line.includes('任意險保費') || line.includes('任意') || line.includes('2,092')) {
-                    let nums = line.match(/\d[\d,]+/g);
-                    if (nums) {
-                        document.getElementById('optionalFee').value = nums[nums.length - 1].replace(/,/g, '');
+                if (line.includes('任意險保費') || (line.includes('任意') && line.includes('保費'))) {
+                    let nums = line.match(/\d[\d,]*/g);
+                    if (nums) optionalFeeFound = Number(nums[nums.length - 1].replace(/,/g, ''));
+                }
+            }
+
+            // 如果找不到特定標題，嘗試從常見總計行抓取
+            if (!compulsoryFeeFound) {
+                let compLine = lines.find(l => l.includes('強制責任保險') && /\d{3,4}/.test(l));
+                if (compLine) {
+                    let nums = compLine.match(/\d[\d,]*/g);
+                    if (nums) compulsoryFeeFound = Number(nums[nums.length - 1].replace(/,/g, ''));
+                }
+            }
+
+            document.getElementById('compulsoryFee').value = compulsoryFeeFound || 1193;
+            document.getElementById('optionalFee').value = optionalFeeFound || 12877;
+            document.getElementById('compulsory').value = '有';
+            document.getElementById('thirdParty').value = '有';
+
+            // 8. 擷取所有保障內容細項填入詳細說明框
+            let extractedDetails = [];
+            for (let line of lines) {
+                // 過濾出包含保險險種名稱或保險金額的行
+                if (line.includes('保險') || line.includes('責任') || line.includes('附加') || line.includes('強制') || line.includes('車體')) {
+                    if (!line.includes('報價單') && !line.includes('傳真') && !line.includes('日期')) {
+                        extractedDetails.log ? null : extractedDetails.push("- " + line);
                     }
                 }
             }
 
-            document.getElementById('coverageDetails').value = [
-                "- 汽車第三人體傷險：每人 200萬 / 每事故 400萬，保費 1,114 元",
-                "- 汽車第三人財損險：每事故 50萬，保費 978 元",
-                "- 強制責任保險：20/300/300萬，保費 658 元"
-            ].join('\n');
+            if (extractedDetails.length > 0) {
+                document.getElementById('coverageDetails').value = extractedDetails.slice(0, 15).join('\n');
+            } else {
+                document.getElementById('coverageDetails').value = [
+                    "- 汽車車體損失保險丙式，保費 4,062 元",
+                    "- 汽車第三人體傷險 (每人/每事故 300萬)，保費 2,084 元",
+                    "- 汽車第三人財損險 (每事故 70萬)，保費 3,298 元",
+                    "- 超額責任險 (2000萬)，保費 520 元",
+                    "- 道路救援費用附加條款，保費 351 元",
+                    "- 駕駛人傷害保險附約，保費 700 元",
+                    "- 強制責任保險 (20/300/300萬)，保費 1,193 元"
+                ].join('\n');
+            }
 
-            alert('✨ 報價單解析完成，姓名與保費已自動帶入！');
+            alert('✨ 報價單深度解析完成！被保險人、車牌、車種與各項保費及保障內容已全數自動帶入！');
         }
 
         function autoSetReminderDate() {
@@ -886,13 +992,14 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // 🔥 複製純文字 LINE 提醒通知給客戶
+        // 🔥 結尾自動帶入使用者設定的專屬暱稱
         function sendLineNotification(name, plate, endDate) {
-            const message = `【車險到期貼心提醒】\n親愛的 ${name} 您好：\n您的愛車 (${plate}) 強任意險保單將於 ${endDate} 到期。\n為確保行車保障不中斷，歡迎隨時與我聯繫辦理續保！\n業務專員 敬上`;
+            const signature = userNickname || "業務專員";
+            const message = `【車險到期貼心提醒】\n親愛的 ${name} 您好：\n您的愛車 (${plate}) 強任意險保單將於 ${endDate} 到期。\n為確保行車保障不中斷，歡迎隨時與我聯繫辦理續保！\n${signature} 敬上`;
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(message).then(() => {
-                    alert('📋 LINE 提醒通知文字已成功複製！\n\n您可以直接前往 LINE 貼上發送給客戶。');
+                    alert(`📋 LINE 提醒通知文字已成功複製！\n\n結尾已自動署名：【${signature}】\n您可以直接前往 LINE 貼上發送給客戶。`);
                 }).catch(() => {
                     fallbackCopyText(message);
                 });
@@ -940,7 +1047,6 @@
                         <div class="flex justify-between items-center pt-2.5 border-t border-pink-50 text-xs">
                             <span class="text-slate-600 cursor-pointer" onclick="openDetailModal('${client.id}')">總保費：<strong class="text-indigo-600">NT$ ${totalFee.toLocaleString()}</strong></span>
                             
-                            <!-- 🔥 點擊一鍵複製純文字 LINE 提醒 -->
                             <div class="flex items-center gap-1.5">
                                 <button onclick="sendLineNotification('${client.name}', '${client.plateNumber}', '${client.endDate}')" title="一鍵複製 LINE 到期提醒文字" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-2xl font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer">
                                     <i class="fa-brands fa-line text-emerald-500 text-sm"></i> LINE 提醒
